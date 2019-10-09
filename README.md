@@ -35,7 +35,7 @@ tomox.createOrder({
 ### Cancel an order
 ```javascript
 const orderHash = '0x0' // hash of order you want to cancel
-tomox.createOrder(orderHash)
+tomox.cancelOrder(orderHash)
     .then(data => {
         console.log(data)
     }).catch(e => {
