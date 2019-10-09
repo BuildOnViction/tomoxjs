@@ -9,10 +9,10 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "request": "^2.88.0",
     "web3": "^1.2.1"
   },
   "devDependencies": {
-    "eslint": "^6.5.1",
-    "jsdoc": "^3.6.3"
+    "eslint": "^6.5.1"
   }
 }
