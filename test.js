@@ -11,7 +11,9 @@ tomox.getRelayerInformation().then(data => {
 })
 tomox.createOrder({
     baseToken:'0xBD8b2Fb871F97b2d5F0A1af3bF73619b09174B2A',
-    quoteToken: '0x0000000000000000000000000000000000000001'
+    quoteToken: '0x0000000000000000000000000000000000000001',
+    price: '21207.02',
+    amount: '0.004693386710283129'
 }).then(data => {
     console.log(data)
 })

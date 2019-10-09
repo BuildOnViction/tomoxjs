@@ -2,6 +2,7 @@
 const ethers = require('ethers')
 const request = require('request')
 const urljoin = require('url-join');
+const BigNumber = require('bignumber.js')
 
 class TomoXJS {
     constructor (
@@ -32,7 +33,7 @@ class TomoXJS {
                 }
 
                 try {
-                    let nonce = (body || {}).data
+                    let nonce = ((body || {}).data || 0).toString()
                     return resolve(nonce)
                 } catch (e) {
                     return reject(Error('Can not get nonce, check relayer uri again'))
@@ -65,6 +66,32 @@ class TomoXJS {
                     return reject(Error('Can not get nonce, check relayer uri again'))
                 }
 
+            })
+        })
+    }
+    getTokenInformation(address) {
+        return new Promise((resolve, reject) => {
+
+            let url = urljoin(this.relayerUri, '/api/tokens', address)
+            let options = {
+                method: 'GET',
+                url: url,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+
+                try {
+                    let info = (body || {}).data
+                    return resolve(info)
+                } catch (e) {
+                    return reject(Error('Can not get nonce, check relayer uri again'))
+                }
             })
         })
     }
@@ -109,11 +136,18 @@ class TomoXJS {
                   quoteToken: order.quoteToken,
                   side: order.side || 'BUY',
                   type: order.type || 'LO',
-                  status: 'NEW',
-                  pricepoint: '21207020000000000000000',
-                  amount: '4693386710283129'
+                  status: 'NEW'
             }
 
+            let baseToken = await this.getTokenInformation(order.baseToken)
+            let quoteToken = await this.getTokenInformation(order.quoteToken)
+
+            o.pricepoint = new BigNumber(order.price)
+                .multipliedBy(10 ** baseToken.decimals).toString(10)
+            o.amount = new BigNumber(order.amount)
+                .multipliedBy(10 ** quoteToken.decimals).toString(10)
+
+            console.log(o)
             o.nonce = await this.getOrderNonce()
             o.hash = this.getOrderHash(o)
             let signature = await this.wallet.signMessage(ethers.utils.arrayify(o.hash))
