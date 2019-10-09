@@ -1,19 +1,30 @@
 {
-  "name": "tomoxjs",
-  "version": "0.0.1",
-  "description": "TomoX Relayer Javascript SDK",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "MIT",
-  "dependencies": {
-    "request": "^2.88.0",
-    "url-join": "^4.0.1",
-    "web3": "^1.2.1"
-  },
-  "devDependencies": {
-    "eslint": "^6.5.1"
-  }
+    "name": "tomoxjs",
+    "version": "0.0.1",
+    "description": "TomoX Relayer Javascript SDK",
+    "keywords": [
+        "tomox",
+        "tomochain"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/tomochain/tomoxjs.git"
+    },
+    "bugs": {
+        "url": "http://github.com/tomochain/tomoxjs/issues"
+    },
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "ethers": "^4.0.37",
+        "request": "^2.88.0",
+        "url-join": "^4.0.1"
+    },
+    "devDependencies": {
+        "eslint": "^6.5.1"
+    }
 }
