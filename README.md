@@ -19,7 +19,7 @@ const tomox = new TomoX(relayerUri, pkey)
 
 ### Create an order
 
-```
+```javascript
 tomox.createOrder({
     baseToken:'0xBD8b2Fb871F97b2d5F0A1af3bF73619b09174B2A', // Base Token Address e.g BTC
     quoteToken: '0x0000000000000000000000000000000000000001', // Quote Token Address e.g TOMO
@@ -33,7 +33,7 @@ tomox.createOrder({
 ```
 
 ### Cancel an order
-```
+```javascript
 const orderHash = '0x0' // hash of order you want to cancel
 tomox.createOrder(orderHash)
     .then(data => {
