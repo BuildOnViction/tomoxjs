@@ -6,7 +6,7 @@ npm install --save tomoxjs
 
 
 ## Use
-```
+```javascript
 const TomoX = require('tomoxjs')
 
 
