@@ -16,4 +16,7 @@ tomox.createOrder({
     amount: '0.004693386710283129'
 }).then(data => {
     console.log(data)
+    tomox.cancelOrder(data.hash).then(data => {
+        console.log(data)
+    })
 })

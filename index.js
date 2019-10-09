@@ -42,7 +42,7 @@ class TomoXJS {
             })
         })
     }
-    getRelayerInformation() {
+    getRelayerInfo() {
         return new Promise((resolve, reject) => {
 
             let url = urljoin(this.relayerUri, '/api/info')
@@ -69,7 +69,7 @@ class TomoXJS {
             })
         })
     }
-    getTokenInformation(address) {
+    getTokenInfo(address) {
         return new Promise((resolve, reject) => {
 
             let url = urljoin(this.relayerUri, '/api/tokens', address)
@@ -123,8 +123,10 @@ class TomoXJS {
             ],
         )
     }
+    getOrderCancelHash(oc) {
+        return ethers.utils.solidityKeccak256(['bytes', 'uint256'], [oc.orderHash, oc.nonce])
+    }
     createOrder(order) {
-
         return new Promise(async (resolve, reject) => {
 
             let relayer = await this.getRelayerInformation()
@@ -139,8 +141,8 @@ class TomoXJS {
                   status: 'NEW'
             }
 
-            let baseToken = await this.getTokenInformation(order.baseToken)
-            let quoteToken = await this.getTokenInformation(order.quoteToken)
+            let baseToken = await this.getTokenInfo(order.baseToken)
+            let quoteToken = await this.getTokenInfo(order.quoteToken)
 
             o.pricepoint = new BigNumber(order.price)
                 .multipliedBy(10 ** baseToken.decimals).toString(10)
@@ -155,8 +157,6 @@ class TomoXJS {
 
             o.signature = { R: r, S: s, V: v }
 
-
-            console.log(o)
             let options = {
                 method: 'POST',
                 url: url,
@@ -172,8 +172,7 @@ class TomoXJS {
                 }
 
                 try {
-                    let nonce = (body || {}).data
-                    return resolve(nonce)
+                    return resolve(o)
                 } catch (e) {
                     return reject(Error('Can not get nonce, check relayer uri again'))
                 }
@@ -181,8 +180,42 @@ class TomoXJS {
             })
         })
     }
-    cancelOrder() {
-        return 0
+    cancelOrder(orderHash, nonce = 0) {
+        return new Promise(async (resolve, reject) = {
+
+            const oc = {}
+            oc.orderHash = orderHash
+            oc.nonce = nonce || await this.getOrderNonce()
+            oc.hash = this.getOrderCancelHash(oc)
+
+            const signature = await this.wallet.signMessage(utils.arrayify(oc.hash))
+            const { r, s, v } = ethers.utils.splitSignature(signature)
+
+            oc.signature = { R: r, S: s, V: v }
+
+            let url = urljoin(this.relayerUri, '/api/orders/cancel')
+            let options = {
+                method: 'POST',
+                url: url,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: oc
+            }
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+
+                try {
+                    return resolve(oc)
+                } catch (e) {
+                    return reject(Error('Can not get nonce, check relayer uri again'))
+                }
+
+            })
+        })
     }
 }
 
