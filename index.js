@@ -154,7 +154,7 @@ class TomoXJS {
                 o.amount = new BigNumber(order.amount)
                     .multipliedBy(10 ** quoteToken.decimals).toString(10)
 
-                o.nonce = validator.isInt(order.nonce || 0) ? String(order.nonce) : await this.getOrderNonce()
+                o.nonce = validator.isInt(order.nonce || "0") ? String(order.nonce) : await this.getOrderNonce()
                 o.hash = this.getOrderHash(o)
                 let signature = await this.wallet.signMessage(ethers.utils.arrayify(o.hash))
                 let { r, s, v } = ethers.utils.splitSignature(signature)
