@@ -145,6 +145,10 @@ class TomoXJS {
             let baseToken = await this.getTokenInfo(order.baseToken)
             let quoteToken = await this.getTokenInfo(order.quoteToken)
 
+            if (!baseToken || !quoteToken) {
+                return reject(Error('Can not get token info'))
+            }
+
             o.pricepoint = new BigNumber(order.price)
                 .multipliedBy(10 ** baseToken.decimals).toString(10)
             o.amount = new BigNumber(order.amount)

@@ -10,6 +10,9 @@ tomox.getOrderNonce().then(data => {
 tomox.getRelayerInfo().then(data => {
     console.log(data)
 })
+tomox.getPairs().then(data => {
+    console.log(data)
+})
 */
 const args = process.argv.slice(2);
 tomox.createOrder({
