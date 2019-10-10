@@ -1,9 +1,9 @@
 {
-    "parserOptions": {},
-    "extends": [
-        "standard"
-    ],
-    "plugins": [ ],
+    "parserOptions": {
+        "ecmaVersion": 2017
+    },
+    "extends": [],
+    "plugins": [],
     "rules": {
         "key-spacing"          : 0,
         "jsx-quotes"           : [2, "prefer-single"],

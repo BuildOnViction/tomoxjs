@@ -132,13 +132,13 @@ class TomoXJS {
             let relayer = await this.getRelayerInformation()
             let url = urljoin(this.relayerUri, '/api/orders')
             let o = {
-                  userAddress: this.coinbase,
-                  exchangeAddress: relayer.exchangeAddress,
-                  baseToken: order.baseToken,
-                  quoteToken: order.quoteToken,
-                  side: order.side || 'BUY',
-                  type: order.type || 'LO',
-                  status: 'NEW'
+                userAddress: this.coinbase,
+                exchangeAddress: relayer.exchangeAddress,
+                baseToken: order.baseToken,
+                quoteToken: order.quoteToken,
+                side: order.side || 'BUY',
+                type: order.type || 'LO',
+                status: 'NEW'
             }
 
             let baseToken = await this.getTokenInfo(order.baseToken)
@@ -181,7 +181,7 @@ class TomoXJS {
         })
     }
     cancelOrder(orderHash, nonce = 0) {
-        return new Promise(async (resolve, reject) = {
+        return new Promise(async (resolve, reject) => {
 
             const oc = {}
             oc.orderHash = orderHash
