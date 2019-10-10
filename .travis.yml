@@ -1,0 +1,26 @@
+sudo: required
+language: node_js
+node_js:
+  - "8"
+  - "10"
+  - "12"
+
+jobs:
+  include:
+    - stage: Lint
+      script: npm run lint
+    - stage: Audit
+      script: npm audit --production
+    - stage: Npm release
+      node_js: "8"
+      script: echo "Deploying to npm ..."
+      deploy:
+        provider: npm
+        api_key: $NPM_API_KEY
+        on: deploy-npm-release
+
+stages:
+  - name: Lint
+  - name: Test
+  - name: Npm release
+    if: type != pull_request AND branch =~ ^v AND tag IS present AND repo = tomochain/tomoxjs
