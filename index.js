@@ -215,6 +215,32 @@ class TomoXJS {
             })
         })
     }
+    getPairs() {
+        return new Promise((resolve, reject) => {
+
+            let url = urljoin(this.relayerUri, '/api/pairs')
+            let options = {
+                method: 'GET',
+                url: url,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+
+                try {
+                    let pairs = (body || {}).data
+                    return resolve(pairs)
+                } catch (e) {
+                    return reject(Error('Can not get pairs, check relayer uri again'))
+                }
+            })
+        })
+    }
 }
 
 
