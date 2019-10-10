@@ -1,7 +1,7 @@
 const TomoXJS = require('./index')
 
 
-let tomox = new TomoXJS('http://localhost:3001/')
+let tomox = new TomoXJS('http://localhost:3001/', '0x84d044e32416c2caa14ba6e5b2f423ff20811329128c85889a1eac6769e1eb80')
 
 tomox.getOrderNonce().then(data => {
     console.log(data)
@@ -15,8 +15,8 @@ tomox.createOrder({
     price: '21207.02',
     amount: '0.004693386710283129'
 }).then(data => {
-    console.log(data)
+    console.log('order', data)
     return tomox.cancelOrder(data.hash).then(data => {
-        console.log(data)
+        console.log('cancelOrder', data)
     })
 }).catch(e => console.log(e))

@@ -169,15 +169,12 @@ class TomoXJS {
                 if (error) {
                     return reject(error)
                 }
-                if (response.statusCode !== 200) {
+                console.log(response.statusCode)
+                if (response.statusCode !== 200 && response.statusCode !== 201) {
                     return reject(body)
                 }
 
-                try {
-                    return resolve(o)
-                } catch (e) {
-                    return reject(Error('Can not get nonce, check relayer uri again'))
-                }
+                return resolve(o)
 
             })
         })
@@ -209,15 +206,11 @@ class TomoXJS {
                 if (error) {
                     return reject(error)
                 }
-                if (response.statusCode !== 200) {
+                if (response.statusCode !== 200 && response.statusCode !== 201) {
                     return reject(body)
                 }
 
-                try {
-                    return resolve(oc)
-                } catch (e) {
-                    return reject(Error('Can not get nonce, check relayer uri again'))
-                }
+                return resolve(oc)
 
             })
         })
