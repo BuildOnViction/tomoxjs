@@ -3,7 +3,9 @@
         "ecmaVersion": 2017
     },
     "extends": [],
-    "plugins": [],
+    "plugins": [
+        "promise"
+    ],
     "rules": {
         "key-spacing"          : 0,
         "jsx-quotes"           : [2, "prefer-single"],

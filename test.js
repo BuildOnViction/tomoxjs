@@ -6,7 +6,7 @@ let tomox = new TomoXJS('http://localhost:3001/')
 tomox.getOrderNonce().then(data => {
     console.log(data)
 })
-tomox.getRelayerInformation().then(data => {
+tomox.getRelayerInfo().then(data => {
     console.log(data)
 })
 tomox.createOrder({
@@ -16,7 +16,7 @@ tomox.createOrder({
     amount: '0.004693386710283129'
 }).then(data => {
     console.log(data)
-    tomox.cancelOrder(data.hash).then(data => {
+    return tomox.cancelOrder(data.hash).then(data => {
         console.log(data)
     })
-})
+}).catch(e => console.log(e))

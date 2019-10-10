@@ -129,7 +129,7 @@ class TomoXJS {
     createOrder(order) {
         return new Promise(async (resolve, reject) => {
 
-            let relayer = await this.getRelayerInformation()
+            let relayer = await this.getRelayerInfo()
             let url = urljoin(this.relayerUri, '/api/orders')
             let o = {
                 userAddress: this.coinbase,
@@ -149,7 +149,6 @@ class TomoXJS {
             o.amount = new BigNumber(order.amount)
                 .multipliedBy(10 ** quoteToken.decimals).toString(10)
 
-            console.log(o)
             o.nonce = await this.getOrderNonce()
             o.hash = this.getOrderHash(o)
             let signature = await this.wallet.signMessage(ethers.utils.arrayify(o.hash))
@@ -170,6 +169,9 @@ class TomoXJS {
                 if (error) {
                     return reject(error)
                 }
+                if (response.statusCode !== 200) {
+                    return reject(body)
+                }
 
                 try {
                     return resolve(o)
@@ -188,7 +190,7 @@ class TomoXJS {
             oc.nonce = nonce || await this.getOrderNonce()
             oc.hash = this.getOrderCancelHash(oc)
 
-            const signature = await this.wallet.signMessage(utils.arrayify(oc.hash))
+            const signature = await this.wallet.signMessage(ethers.utils.arrayify(oc.hash))
             const { r, s, v } = ethers.utils.splitSignature(signature)
 
             oc.signature = { R: r, S: s, V: v }
@@ -206,6 +208,9 @@ class TomoXJS {
             request(options, (error, response, body) => {
                 if (error) {
                     return reject(error)
+                }
+                if (response.statusCode !== 200) {
+                    return reject(body)
                 }
 
                 try {
