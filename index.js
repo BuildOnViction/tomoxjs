@@ -3,6 +3,7 @@ const ethers = require('ethers')
 const request = require('request')
 const urljoin = require('url-join');
 const BigNumber = require('bignumber.js')
+const validator = require('validator')
 
 class TomoXJS {
     constructor (
@@ -90,7 +91,7 @@ class TomoXJS {
                     let info = (body || {}).data
                     return resolve(info)
                 } catch (e) {
-                    return reject(Error('Can not get nonce, check relayer uri again'))
+                    return reject(Error('Can not get token info, check relayer uri again'))
                 }
             })
         })
@@ -149,7 +150,7 @@ class TomoXJS {
             o.amount = new BigNumber(order.amount)
                 .multipliedBy(10 ** quoteToken.decimals).toString(10)
 
-            o.nonce = await this.getOrderNonce()
+            o.nonce = validator.isInt(order.nonce) ? String(order.nonce) : await this.getOrderNonce()
             o.hash = this.getOrderHash(o)
             let signature = await this.wallet.signMessage(ethers.utils.arrayify(o.hash))
             let { r, s, v } = ethers.utils.splitSignature(signature)
@@ -169,7 +170,6 @@ class TomoXJS {
                 if (error) {
                     return reject(error)
                 }
-                console.log(response.statusCode)
                 if (response.statusCode !== 200 && response.statusCode !== 201) {
                     return reject(body)
                 }
