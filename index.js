@@ -129,94 +129,101 @@ class TomoXJS {
     }
     createOrder(order) {
         return new Promise(async (resolve, reject) => {
-
-            let relayer = await this.getRelayerInfo()
-            let url = urljoin(this.relayerUri, '/api/orders')
-            let o = {
-                userAddress: this.coinbase,
-                exchangeAddress: relayer.exchangeAddress,
-                baseToken: order.baseToken,
-                quoteToken: order.quoteToken,
-                side: order.side || 'BUY',
-                type: order.type || 'LO',
-                status: 'NEW'
-            }
-
-            let baseToken = await this.getTokenInfo(order.baseToken)
-            let quoteToken = await this.getTokenInfo(order.quoteToken)
-
-            if (!baseToken || !quoteToken) {
-                return reject(Error('Can not get token info'))
-            }
-
-            o.pricepoint = new BigNumber(order.price)
-                .multipliedBy(10 ** baseToken.decimals).toString(10)
-            o.amount = new BigNumber(order.amount)
-                .multipliedBy(10 ** quoteToken.decimals).toString(10)
-
-            o.nonce = validator.isInt(order.nonce) ? String(order.nonce) : await this.getOrderNonce()
-            o.hash = this.getOrderHash(o)
-            let signature = await this.wallet.signMessage(ethers.utils.arrayify(o.hash))
-            let { r, s, v } = ethers.utils.splitSignature(signature)
-
-            o.signature = { R: r, S: s, V: v }
-
-            let options = {
-                method: 'POST',
-                url: url,
-                json: true,
-                headers: {
-                    'content-type': 'application/json'
-                },
-                body: o
-            }
-            request(options, (error, response, body) => {
-                if (error) {
-                    return reject(error)
-                }
-                if (response.statusCode !== 200 && response.statusCode !== 201) {
-                    return reject(body)
+            try {
+                let relayer = await this.getRelayerInfo()
+                let url = urljoin(this.relayerUri, '/api/orders')
+                let o = {
+                    userAddress: this.coinbase,
+                    exchangeAddress: relayer.exchangeAddress,
+                    baseToken: order.baseToken,
+                    quoteToken: order.quoteToken,
+                    side: order.side || 'BUY',
+                    type: order.type || 'LO',
+                    status: 'NEW'
                 }
 
-                return resolve(o)
+                let baseToken = await this.getTokenInfo(order.baseToken)
+                let quoteToken = await this.getTokenInfo(order.quoteToken)
 
-            })
+                if (!baseToken || !quoteToken) {
+                    return reject(Error('Can not get token info'))
+                }
+
+                o.pricepoint = new BigNumber(order.price)
+                    .multipliedBy(10 ** baseToken.decimals).toString(10)
+                o.amount = new BigNumber(order.amount)
+                    .multipliedBy(10 ** quoteToken.decimals).toString(10)
+
+                o.nonce = validator.isInt(order.nonce || 0) ? String(order.nonce) : await this.getOrderNonce()
+                o.hash = this.getOrderHash(o)
+                let signature = await this.wallet.signMessage(ethers.utils.arrayify(o.hash))
+                let { r, s, v } = ethers.utils.splitSignature(signature)
+
+                o.signature = { R: r, S: s, V: v }
+
+                let options = {
+                    method: 'POST',
+                    url: url,
+                    json: true,
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: o
+                }
+                request(options, (error, response, body) => {
+                    if (error) {
+                        return reject(error)
+                    }
+                    if (response.statusCode !== 200 && response.statusCode !== 201) {
+                        return reject(body)
+                    }
+
+                    return resolve(o)
+
+                })
+            } catch(e) {
+                return reject(e)
+            }
         })
     }
     cancelOrder(orderHash, nonce = 0) {
         return new Promise(async (resolve, reject) => {
 
-            const oc = {}
-            oc.orderHash = orderHash
-            oc.nonce = nonce || await this.getOrderNonce()
-            oc.hash = this.getOrderCancelHash(oc)
+            try {
+                const oc = {}
+                oc.orderHash = orderHash
+                oc.nonce = nonce || await this.getOrderNonce()
+                oc.hash = this.getOrderCancelHash(oc)
 
-            const signature = await this.wallet.signMessage(ethers.utils.arrayify(oc.hash))
-            const { r, s, v } = ethers.utils.splitSignature(signature)
+                const signature = await this.wallet.signMessage(ethers.utils.arrayify(oc.hash))
+                const { r, s, v } = ethers.utils.splitSignature(signature)
 
-            oc.signature = { R: r, S: s, V: v }
+                oc.signature = { R: r, S: s, V: v }
 
-            let url = urljoin(this.relayerUri, '/api/orders/cancel')
-            let options = {
-                method: 'POST',
-                url: url,
-                json: true,
-                headers: {
-                    'content-type': 'application/json'
-                },
-                body: oc
+                let url = urljoin(this.relayerUri, '/api/orders/cancel')
+                let options = {
+                    method: 'POST',
+                    url: url,
+                    json: true,
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: oc
+                }
+                request(options, (error, response, body) => {
+                    if (error) {
+                        return reject(error)
+                    }
+                    if (response.statusCode !== 200 && response.statusCode !== 201) {
+                        return reject(body)
+                    }
+
+                    return resolve(oc)
+
+                })
+            } catch(e) {
+                return reject(e)
             }
-            request(options, (error, response, body) => {
-                if (error) {
-                    return reject(error)
-                }
-                if (response.statusCode !== 200 && response.statusCode !== 201) {
-                    return reject(body)
-                }
-
-                return resolve(oc)
-
-            })
         })
     }
     getPairs() {
