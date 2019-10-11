@@ -204,6 +204,7 @@ class TomoXJS {
             try {
                 let relayer = await this.getRelayerInfo()
                 let url = urljoin(this.relayerUri, '/api/orders')
+                let nonce = order.nonce || await this.getOrderNonce()
                 let o = {
                     userAddress: this.coinbase,
                     exchangeAddress: relayer.exchangeAddress,
@@ -226,7 +227,7 @@ class TomoXJS {
                 o.amount = new BigNumber(order.amount)
                     .multipliedBy(10 ** quoteToken.decimals).toString(10)
 
-                o.nonce = String(order.nonce) || await this.getOrderNonce()
+                o.nonce = String(nonce)
                 o.hash = this.getOrderHash(o)
                 let signature = await this.wallet.signMessage(ethers.utils.arrayify(o.hash))
                 let { r, s, v } = ethers.utils.splitSignature(signature)

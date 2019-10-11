@@ -23,6 +23,7 @@ jobs:
 
 stages:
   - name: Lint
+  - name: Audit
   - name: Test
   - name: Npm release
     if: type != pull_request AND branch =~ ^v AND tag IS present AND repo = tomochain/tomoxjs
