@@ -133,7 +133,7 @@ class TomoXJS {
                 let nonce = String(order.nonce) || await this.getOrderNonce()
                 let url = urljoin(this.relayerUri, '/api/orders')
 
-                let options = []
+                let ret = []
 
                 for (order in orders) {
                     let o = {
@@ -189,9 +189,10 @@ class TomoXJS {
                             })
                         })
                     }
-                    await p()
+                    ret.push(await p())
                     nonce = nonce + 1
                 }
+                return resolve(ret)
 
             } catch(e) {
                 return reject(e)
@@ -263,7 +264,7 @@ class TomoXJS {
             try {
                 const oc = {}
                 oc.orderHash = orderHash
-                oc.nonce = nonce || await this.getOrderNonce()
+                oc.nonce = String(nonce) || await this.getOrderNonce()
                 oc.hash = this.getOrderCancelHash(oc)
 
                 const signature = await this.wallet.signMessage(ethers.utils.arrayify(oc.hash))
