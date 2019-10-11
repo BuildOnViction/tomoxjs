@@ -3,7 +3,6 @@ const ethers = require('ethers')
 const request = require('request')
 const urljoin = require('url-join');
 const BigNumber = require('bignumber.js')
-const validator = require('validator')
 
 class TomoXJS {
     constructor (
@@ -127,6 +126,78 @@ class TomoXJS {
     getOrderCancelHash(oc) {
         return ethers.utils.solidityKeccak256(['bytes', 'uint256'], [oc.orderHash, oc.nonce])
     }
+    createManyOrders(orders) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let relayer = await this.getRelayerInfo()
+                let nonce = String(order.nonce) || await this.getOrderNonce()
+                let url = urljoin(this.relayerUri, '/api/orders')
+
+                let options = []
+
+                for (order in orders) {
+                    let o = {
+                        userAddress: this.coinbase,
+                        exchangeAddress: relayer.exchangeAddress,
+                        baseToken: order.baseToken,
+                        quoteToken: order.quoteToken,
+                        side: order.side || 'BUY',
+                        type: order.type || 'LO',
+                        status: 'NEW'
+                    }
+
+                    let baseToken = await this.getTokenInfo(order.baseToken)
+                    let quoteToken = await this.getTokenInfo(order.quoteToken)
+
+                    if (!baseToken || !quoteToken) {
+                        return reject(Error('Can not get token info'))
+                    }
+
+                    o.pricepoint = new BigNumber(order.price)
+                        .multipliedBy(10 ** baseToken.decimals).toString(10)
+                    o.amount = new BigNumber(order.amount)
+                        .multipliedBy(10 ** quoteToken.decimals).toString(10)
+
+                    o.nonce = nonce
+                    o.hash = this.getOrderHash(o)
+                    let signature = await this.wallet.signMessage(ethers.utils.arrayify(o.hash))
+                    let { r, s, v } = ethers.utils.splitSignature(signature)
+
+                    o.signature = { R: r, S: s, V: v }
+
+                    let options = {
+                        method: 'POST',
+                        url: url,
+                        json: true,
+                        headers: {
+                            'content-type': 'application/json'
+                        },
+                        body: o
+                    }
+                    let p = () => {
+                        return new Promise((rl, rj) => {
+                            request(options, (error, response, body) => {
+                                if (error) {
+                                    return rj(error)
+                                }
+                                if (response.statusCode !== 200 && response.statusCode !== 201) {
+                                    return rj(body)
+                                }
+
+                                return rl(o)
+
+                            })
+                        })
+                    }
+                    await p()
+                    nonce = nonce + 1
+                }
+
+            } catch(e) {
+                return reject(e)
+            }
+        })
+    }
     createOrder(order) {
         return new Promise(async (resolve, reject) => {
             try {
@@ -154,7 +225,7 @@ class TomoXJS {
                 o.amount = new BigNumber(order.amount)
                     .multipliedBy(10 ** quoteToken.decimals).toString(10)
 
-                o.nonce = validator.isInt(order.nonce || "0") ? String(order.nonce) : await this.getOrderNonce()
+                o.nonce = String(order.nonce) || await this.getOrderNonce()
                 o.hash = this.getOrderHash(o)
                 let signature = await this.wallet.signMessage(ethers.utils.arrayify(o.hash))
                 let { r, s, v } = ethers.utils.splitSignature(signature)

@@ -18,7 +18,8 @@ jobs:
         provider: npm
         email: $NPM_EMAIL
         api_key: $NPM_API_KEY
-        on: deploy-npm-release
+        on:
+          tags: true
 
 stages:
   - name: Lint

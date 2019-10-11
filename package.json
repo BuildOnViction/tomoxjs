@@ -24,8 +24,7 @@
         "bignumber.js": "^9.0.0",
         "ethers": "^4.0.37",
         "request": "^2.88.0",
-        "url-join": "^4.0.1",
-        "validator": "^11.1.0"
+        "url-join": "^4.0.1"
     },
     "devDependencies": {
         "eslint": "^6.5.1",
