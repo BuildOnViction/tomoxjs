@@ -325,6 +325,40 @@ class TomoXJS {
             })
         })
     }
+
+    getAccount(address, tokenAddress = false) {
+        return new Promise((resolve, reject) => {
+
+            let url = urljoin(this.relayerUri, '/api/account', address)
+            if (tokenAddress) {
+                url = urljoin(this.relayerUri, '/api/account', address, tokenAddress)
+            }
+            let options = {
+                method: 'GET',
+                url: url,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+
+                try {
+                    let data = (body || {}).data
+
+                    let ret = {}
+                    ret = (data || {}).tokenBalances || data
+                    return resolve(ret)
+                } catch (e) {
+                    return reject(Error('Can not get pairs, check relayer uri again'))
+                }
+            })
+        })
+    }
 }
 
 
