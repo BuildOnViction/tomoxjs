@@ -64,3 +64,22 @@ tomox.cancelOrder(orderHash)
         console.log(e)
     })
 ```
+
+### Get account balances
+Get the current account balances
+```javascript
+tomox.getAccount()
+    .then(data => {
+        console.log(data)
+    }).catch(e => {
+        console.log(e)
+    })
+```
+Get the specify account balances
+```javascript
+tomox.getAccount(address)
+    .then(data => {
+        console.log(data)
+    }).catch(e => {
+        console.log(e)
+    })

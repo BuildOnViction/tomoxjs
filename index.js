@@ -326,8 +326,9 @@ class TomoXJS {
         })
     }
 
-    getAccount(address, tokenAddress = false) {
+    getAccount(address = false, tokenAddress = false) {
         return new Promise((resolve, reject) => {
+            address = address ? address : this.coinbase
 
             let url = urljoin(this.relayerUri, '/api/account', address)
             if (tokenAddress) {
