@@ -7,6 +7,8 @@ Easy to install the package with command:
 npm install --save tomoxjs
 ```
 
+## APIs
+You can refer to [TomoX API Document](https://apidocs.tomochain.com/#tomodex-apis) to know the APIs that will work with the SDK
 
 ## Use
 You need to declare Relayer URL and your private key to unlock the wallet. You can create a private key at [https://wallet.tomochain.com](https://wallet.tomochain.com)
@@ -83,3 +85,4 @@ tomox.getAccount(address)
     }).catch(e => {
         console.log(e)
     })
+
