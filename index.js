@@ -154,9 +154,9 @@ class TomoXJS {
                     }
 
                     o.pricepoint = new BigNumber(order.price)
-                        .multipliedBy(10 ** baseToken.decimals).toString(10)
-                    o.amount = new BigNumber(order.amount)
                         .multipliedBy(10 ** quoteToken.decimals).toString(10)
+                    o.amount = new BigNumber(order.amount)
+                        .multipliedBy(10 ** baseToken.decimals).toString(10)
 
                     o.nonce = String(nonce)
                     o.hash = this.getOrderHash(o)
@@ -223,9 +223,9 @@ class TomoXJS {
                 }
 
                 o.pricepoint = new BigNumber(order.price)
-                    .multipliedBy(10 ** baseToken.decimals).toString(10)
-                o.amount = new BigNumber(order.amount)
                     .multipliedBy(10 ** quoteToken.decimals).toString(10)
+                o.amount = new BigNumber(order.amount)
+                    .multipliedBy(10 ** baseToken.decimals).toString(10)
 
                 o.nonce = String(nonce)
                 o.hash = this.getOrderHash(o)
