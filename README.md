@@ -85,4 +85,43 @@ tomox.getAccount(address)
     }).catch(e => {
         console.log(e)
     })
+```
 
+## Command Line
+```bash
+$ ./tomoxjs --help
+Usage: tomoxjs [options] [command]
+
+TomoX Market CLI
+
+Options:
+  -V, --version     output the version number
+  -h, --help        output usage information
+
+Commands:
+  create [options]
+  cancel <hash>
+```
+
+### Create Order CLI
+```bash
+$ ./tomoxjs create --help
+Usage: tomoxjs create [options]
+
+Options:
+  -b, --baseToken <baseToken>    base token (default: "0xBD8b2Fb871F97b2d5F0A1af3bF73619b09174B2A")
+  -q, --quoteToken <quoteToken>  quote token (default: "0x0000000000000000000000000000000000000001")
+  -p, --price <price>            price (default: "21207")
+  -a, --amount <amount>          amount (default: "00469")
+  -s, --side <side>              side (default: "BUY")
+  -h, --help                     output usage information
+```
+
+### Cancel Order CLI
+```bash
+$ ./tomoxjs cancel --help
+Usage: tomoxjs cancel [options] <hash>
+
+Options:
+  -h, --help  output usage information
+```
