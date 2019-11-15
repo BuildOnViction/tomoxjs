@@ -130,7 +130,7 @@ $ ./tomoxjs cancel --help
 Usage: tomoxjs cancel [options]
 
 Options:
-  -ha, --hash <hash>   hash
+  -s, --hash <hash>    hash
   -n, --nonce <nonce>  nonce (default: 0)
   -h, --help           output usage information
 ```

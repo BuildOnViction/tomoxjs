@@ -38,7 +38,7 @@ commander
 
 commander
     .command('cancel')
-    .requiredOption('-ha, --hash <hash>', 'hash')
+    .requiredOption('-s, --hash <hash>', 'hash')
     .option('-n, --nonce <nonce>', 'nonce', 0)
     .action(async (params) => {
         await tomox.cancelOrder(params.hash, params.nonce).then(data => {
