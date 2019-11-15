@@ -3,6 +3,7 @@
 const commander = require('commander')
 const TomoXJS = require('./index')
 require('dotenv').config()
+const pjson = require('./package.json')
 
 if (!process.env.DEX_URI || !process.env.TRADER_PKEY) {
     console.log('DEX_URI, TRADER_PKEY env are require, please create .env file')
@@ -14,7 +15,7 @@ const tomox = new TomoXJS(
     process.env.TRADER_PKEY)
 
 commander
-    .version('1.0.0')
+    .version(pjson.version)
     .description('TomoX Market CLI')
 
 commander
