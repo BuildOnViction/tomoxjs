@@ -28,7 +28,7 @@ jobs:
       script:
         - nexe -i tomoxjs -t linux-x64 -o tomoxjs.$TRAVIS_TAG.linux-x64 -r ./
         - nexe -i tomoxjs -t darwin-x64 -o tomoxjs.$TRAVIS_TAG.darwin-x64 -r ./
-        - nexe -i tomoxjs -t windows-x64 -o tomoxjs.$TRAVIS_TAG.windows-x64.exe -r ./
+        - nexe -i tomoxjs -t win32-x64 -o tomoxjs.$TRAVIS_TAG.win-x64.exe -r ./
       deploy:
         provider: releases
         api_key: $GH_TOKEN
@@ -36,7 +36,7 @@ jobs:
         overwrite: true
         file:
           - tomoxjs.$TRAVIS_TAG.linux-x64
-          - tomoxjs.$TRAVIS_TAG.windows-x64.exe
+          - tomoxjs.$TRAVIS_TAG.win-x64.exe
           - tomoxjs.$TRAVIS_TAG.darwin-x64
         on:
           tags: true
