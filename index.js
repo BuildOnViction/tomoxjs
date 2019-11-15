@@ -274,8 +274,8 @@ class TomoXJS {
                 if (!orderID) {
                     return reject(Error('Order is still in pool, not ready to cancel'))
                 }
-                oc.userAddress = userAddress
-                oc.exchangeAddress = exchangeAddress
+                oc.userAddress = ethers.utils.getAddress(userAddress)
+                oc.exchangeAddress = ethers.utils.getAddress(exchangeAddress)
                 oc.orderID = orderID
                 oc.status = 'CANCELLED'
                 oc.hash = this.getOrderCancelHash(oc)
