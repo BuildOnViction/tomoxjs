@@ -2,8 +2,18 @@
 
 const commander = require('commander')
 const TomoXJS = require('./index')
-require('dotenv').config()
 const pjson = require('./package.json')
+const { prompt } = require('inquirer')
+const fs = require('fs')
+const path = require('path')
+const os = require('os')
+
+let configPath = path.resolve(process.cwd(), '.env')
+if (fs.existsSync(path.resolve(require('os').homedir(), '.tomoxjs'))) {
+    configPath = path.resolve(require('os').homedir(), '.tomoxjs')
+}
+
+require('dotenv').config({ path: configPath })
 
 if (!process.env.DEX_URI || !process.env.TRADER_PKEY) {
     console.log('DEX_URI, TRADER_PKEY env are require, please create .env file')
@@ -17,6 +27,27 @@ const tomox = new TomoXJS(
 commander
     .version(pjson.version)
     .description('TomoX Market CLI')
+
+commander
+    .command('setup')
+    .action(async (params) => {
+        const questions = [{
+            type : 'input',
+            name : 'traderPKey',
+            message : 'Enter trader private key (0x)...'
+        }, {
+            type : 'input',
+            name : 'dexUri',
+            message : 'Enter DEX Uri (https://dex.tomochain.com)...'
+        }]
+        prompt(questions).then( answers => {
+            let tomoxjsPath = path.resolve(require('os').homedir(), '.tomoxjs')
+            fs.writeFile(tomoxjsPath, `DEX_URI=${answers.dexUri}\nTRADER_PKEY=${answers.traderPKey}\n`, function (err) {
+                if (err) throw err;
+                console.log('Saved!');
+            });
+        })
+    })
 
 commander
     .command('create')
