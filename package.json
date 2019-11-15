@@ -1,6 +1,6 @@
 {
     "name": "tomoxjs",
-    "version": "0.1.8",
+    "version": "0.2.0",
     "description": "TomoX Relayer Javascript SDK",
     "keywords": [
         "tomox",
