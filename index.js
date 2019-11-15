@@ -124,7 +124,11 @@ class TomoXJS {
         )
     }
     getOrderCancelHash(oc) {
-        return ethers.utils.solidityKeccak256(['bytes', 'uint256'], [oc.orderHash, oc.nonce])
+        return ethers
+            .utils.solidityKeccak256(
+                ['bytes', 'uint256', 'bytes', 'uint256', 'string'],
+                [oc.orderHash, oc.nonce, oc.userAddress, oc.orderId, oc.status]
+            )
     }
     createManyOrders(orders) {
         return new Promise(async (resolve, reject) => {
@@ -266,6 +270,13 @@ class TomoXJS {
                 const oc = {}
                 oc.orderHash = orderHash
                 oc.nonce = String(nonce) || await this.getOrderNonce()
+                let { userAddress, orderId } = await this.getOrderByHash(orderHash)
+                if (!orderId) {
+                    return reject(Error('Order is still in pool, not ready to cancel'))
+                }
+                oc.userAddress = userAddress
+                oc.orderId = orderId
+                oc.status = 'CANCELLED'
                 oc.hash = this.getOrderCancelHash(oc)
 
                 const signature = await this.wallet.signMessage(ethers.utils.arrayify(oc.hash))
@@ -325,7 +336,32 @@ class TomoXJS {
             })
         })
     }
+    getOrderByHash(hash) {
+        return new Promise((resolve, reject) => {
 
+            let url = urljoin(this.relayerUri, '/api/orders', hash)
+            let options = {
+                method: 'GET',
+                url: url,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+
+                try {
+                    let order = (body || {}).data
+                    return resolve(order)
+                } catch (e) {
+                    return reject(Error('Can not get order, check relayer uri again'))
+                }
+            })
+        })
+    }
     getAccount(address = false, tokenAddress = false) {
         return new Promise((resolve, reject) => {
             address = address ? address : this.coinbase

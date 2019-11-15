@@ -15,22 +15,15 @@ tomox.getPairs().then(data => {
 })
 */
 const args = process.argv.slice(2);
-tomox.createManyOrders([{
+
+tomox.createOrder({
     baseToken:'0xBD8b2Fb871F97b2d5F0A1af3bF73619b09174B2A',
     quoteToken: '0x0000000000000000000000000000000000000001',
     price: '21207.02',
     amount: '0.004693386710283129'
-}, {
-    baseToken:'0xBD8b2Fb871F97b2d5F0A1af3bF73619b09174B2A',
-    quoteToken: '0x0000000000000000000000000000000000000001',
-    price: '21207.02',
-    amount: '0.004693386710283129'
-}
-]).then(data => {
+}).then(data => {
     console.log('order', data)
-    /*
     return tomox.cancelOrder(data.hash).then(data => {
         console.log('cancelOrder', data)
     })
-    */
 }).catch(e => console.log(e))

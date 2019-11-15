@@ -1,6 +1,6 @@
 {
     "name": "tomoxjs",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "description": "TomoX Relayer Javascript SDK",
     "keywords": [
         "tomox",
@@ -22,6 +22,7 @@
     "license": "MIT",
     "dependencies": {
         "bignumber.js": "^9.0.0",
+        "commander": "^4.0.1",
         "ethers": "^4.0.37",
         "request": "^2.88.0",
         "url-join": "^4.0.1"
