@@ -14,8 +14,6 @@ jobs:
     - stage: Npm release
       node_js: "8"
       script:
-        - npm install -g nexe
-        - nexe -i tomoxjs -t linux-x64 -o tomoxjs.$TRAVIS_TAG.linux-x64 -r ./
         - echo "Deploying to npm ..."
       deploy:
         provider: npm
@@ -26,7 +24,7 @@ jobs:
 
     - stage: Github release
       before_install:
-        - sudo npm install -g nexe
+        - npm install -g nexe
       script:
         - nexe -i tomoxjs -t linux-x64 -o tomoxjs.$TRAVIS_TAG.linux-x64 -r ./
         - nexe -i tomoxjs -t darwin-x64 -o tomoxjs.$TRAVIS_TAG.darwin-x64 -r ./
