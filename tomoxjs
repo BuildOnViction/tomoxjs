@@ -32,7 +32,7 @@ commander
     .command('setup')
     .action(async (params) => {
         const questions = [{
-            type : 'input',
+            type : 'password',
             name : 'traderPKey',
             message : 'Enter trader private key (0x)...'
         }, {
