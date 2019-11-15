@@ -2,7 +2,16 @@
 
 const commander = require('commander')
 const TomoXJS = require('./index')
+require('dotenv').config()
 
+if (!process.env.DEX_URI || !process.env.TRADER_PKEY) {
+    console.log('DEX_URI, TRADER_PKEY env are require, please create .env file')
+    process.exit(1)
+}
+
+const tomox = new TomoXJS(
+    process.env.DEX_URI,
+    process.env.TRADER_PKEY)
 
 commander
     .version('1.0.0')
@@ -16,10 +25,6 @@ commander
     .option('-a, --amount <amount>', 'amount', '00469')
     .option('-s, --side <side>', 'side', 'BUY')
     .action(async (params) => {
-        let tomox = new TomoXJS(
-            process.env.DEX_URI || 'http://localhost:3001/',
-            process.env.TRADER_PKEY || '0x84d044e32416c2caa14ba6e5b2f423ff20811329128c85889a1eac6769e1eb80')
-
         await tomox.createOrder({
                 baseToken: params.baseToken,
                 quoteToken: params.quoteToken,
@@ -33,10 +38,6 @@ commander
 commander
     .command('cancel <hash>')
     .action(async (hash) => {
-        let tomox = new TomoXJS(
-            process.env.DEX_URI || 'http://localhost:3001/',
-            process.env.TRADER_PKEY || '0x84d044e32416c2caa14ba6e5b2f423ff20811329128c85889a1eac6769e1eb80')
-
         await tomox.cancelOrder(hash).then(data => {
             console.log(data)
         }).catch(e => console.log(e))
