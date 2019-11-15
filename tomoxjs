@@ -1,0 +1,45 @@
+#!/usr/bin/env node
+
+const commander = require('commander')
+const TomoXJS = require('./index')
+
+
+commander
+    .version('1.0.0')
+    .description('TomoX Market CLI')
+
+commander
+    .command('create')
+    .option('-b, --baseToken <baseToken>', 'base token', '0xBD8b2Fb871F97b2d5F0A1af3bF73619b09174B2A')
+    .option('-q, --quoteToken <quoteToken>', 'quote token', '0x0000000000000000000000000000000000000001')
+    .option('-p, --price <price>', 'price', '21207')
+    .option('-a, --amount <amount>', 'amount', '00469')
+    .option('-s, --side <side>', 'side', 'BUY')
+    .action(async (params) => {
+        let tomox = new TomoXJS(
+            process.env.DEX_URI || 'http://localhost:3001/',
+            process.env.TRADER_PKEY || '0x84d044e32416c2caa14ba6e5b2f423ff20811329128c85889a1eac6769e1eb80')
+
+        await tomox.createOrder({
+                baseToken: params.baseToken,
+                quoteToken: params.quoteToken,
+                price: params.price,
+                amount: params.amount
+        }).then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
+
+commander
+    .command('cancel <hash>')
+    .action(async (hash) => {
+        let tomox = new TomoXJS(
+            process.env.DEX_URI || 'http://localhost:3001/',
+            process.env.TRADER_PKEY || '0x84d044e32416c2caa14ba6e5b2f423ff20811329128c85889a1eac6769e1eb80')
+
+        await tomox.cancelOrder(hash).then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
+
+commander.parse(process.argv)
