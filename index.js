@@ -269,7 +269,7 @@ class TomoXJS {
             try {
                 const oc = {}
                 oc.orderHash = orderHash
-                oc.nonce = String(nonce) || await this.getOrderNonce()
+                oc.nonce = String(nonce || await this.getOrderNonce())
                 let { userAddress, orderID } = await this.getOrderByHash(orderHash)
                 if (!orderID) {
                     return reject(Error('Order is still in pool, not ready to cancel'))

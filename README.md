@@ -127,8 +127,10 @@ Options:
 ### Cancel Order CLI
 ```bash
 $ ./tomoxjs cancel --help
-Usage: tomoxjs cancel [options] <hash>
+Usage: tomoxjs cancel [options]
 
 Options:
-  -h, --help  output usage information
+  -ha, --hash <hash>   hash
+  -n, --nonce <nonce>  nonce (default: 0)
+  -h, --help           output usage information
 ```
