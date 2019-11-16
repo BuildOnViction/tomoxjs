@@ -77,4 +77,20 @@ commander
         }).catch(e => console.log(e))
     })
 
+commander
+    .command('pairs')
+    .action(async () => {
+        await tomox.getPairs().then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
+
+commander
+    .command('info')
+    .action(async () => {
+        await tomox.getRelayerInfo().then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
+
 commander.parse(process.argv)
