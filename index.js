@@ -96,6 +96,32 @@ class TomoXJS {
         })
     }
     getOrderHash(order) {
+        if (order.type === 'MO') {
+            return ethers.utils.solidityKeccak256(
+                [
+                    'bytes',
+                    'bytes',
+                    'bytes',
+                    'bytes',
+                    'uint256',
+                    'uint256',
+                    'string',
+                    'string',
+                    'uint256',
+                ],
+                [
+                    order.exchangeAddress,
+                    order.userAddress,
+                    order.baseToken,
+                    order.quoteToken,
+                    order.amount,
+                    order.side === 'BUY' ? '0' : '1',
+                    order.status,
+                    order.type,
+                    order.nonce
+                ],
+            )
+        }
         return ethers.utils.solidityKeccak256(
             [
                 'bytes',
@@ -157,8 +183,10 @@ class TomoXJS {
                         return reject(Error('Can not get token info'))
                     }
 
-                    o.pricepoint = new BigNumber(order.price)
-                        .multipliedBy(10 ** quoteToken.decimals).toString(10)
+                    if (o.type !== 'MO') {
+                        o.pricepoint = new BigNumber(order.price)
+                            .multipliedBy(10 ** quoteToken.decimals).toString(10)
+                    }
                     o.amount = new BigNumber(order.amount)
                         .multipliedBy(10 ** baseToken.decimals).toString(10)
 
@@ -226,8 +254,10 @@ class TomoXJS {
                     return reject(Error('Can not get token info'))
                 }
 
-                o.pricepoint = new BigNumber(order.price)
-                    .multipliedBy(10 ** quoteToken.decimals).toString(10)
+                if (o.type !== 'MO') {
+                    o.pricepoint = new BigNumber(order.price)
+                        .multipliedBy(10 ** quoteToken.decimals).toString(10)
+                }
                 o.amount = new BigNumber(order.amount)
                     .multipliedBy(10 ** baseToken.decimals).toString(10)
 
