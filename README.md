@@ -121,6 +121,7 @@ Options:
   -p, --price <price>            price (default: "21207")
   -a, --amount <amount>          amount (default: "00469")
   -s, --side <side>              side (default: "BUY")
+  -t, --type <type>              type (default: "LO")
   -h, --help                     output usage information
 ```
 
