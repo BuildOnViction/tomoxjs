@@ -9,7 +9,7 @@ npm install --save tomoxjs
 
 Or you can use TomoXJS binary:
 ```
-cd /tmp && wget https://github.com/tomochain/tomoxjs/releases/download/v0.2.5/tomoxjs.v0.2.5.linux-x64 -O tomoxjs
+cd /tmp && wget https://github.com/tomochain/tomoxjs/releases/download/[VERSION]/tomoxjs.[VERSION].linux-x64 -O tomoxjs
 chmod +x tomoxjs && sudo mv tomoxjs /usr/local/bin/
 ```
 
