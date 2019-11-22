@@ -7,6 +7,12 @@ Easy to install the package with command:
 npm install --save tomoxjs
 ```
 
+Or you can use TomoXJS binary:
+```
+cd /tmp && wget https://github.com/tomochain/tomoxjs/releases/download/v0.2.5/tomoxjs.v0.2.5.linux-x64 -O tomoxjs
+chmod +x tomoxjs && sudo mv tomoxjs /usr/local/bin/
+```
+
 ## APIs
 You can refer to [TomoX API Document](https://apidocs.tomochain.com/#tomodex-apis) to know the APIs that will work with the SDK
 
