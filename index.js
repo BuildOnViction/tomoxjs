@@ -239,7 +239,7 @@ class TomoXJS {
                 let nonce = order.nonce || await this.getOrderNonce()
                 let o = {
                     userAddress: this.coinbase,
-                    exchangeAddress: order.exchageAddress || relayer.exchangeAddress,
+                    exchangeAddress: order.exchangeAddress || relayer.exchangeAddress,
                     baseToken: order.baseToken,
                     quoteToken: order.quoteToken,
                     side: order.side || 'BUY',
