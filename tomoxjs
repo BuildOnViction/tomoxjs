@@ -57,10 +57,12 @@ commander
     .option('-a, --amount <amount>', 'amount', '00469')
     .option('-s, --side <side>', 'side', 'BUY')
     .option('-t, --type <type>', 'type', 'LO')
+    .option('-e, --exchangeAddress <exchangeAddress>', 'exchangeAddress')
     .action(async (params) => {
         await tomox.createOrder({
                 baseToken: params.baseToken,
                 quoteToken: params.quoteToken,
+                exchangeAddress: params.exchangeAddress,
                 price: params.price,
                 side: params.side,
                 type: params.type,
