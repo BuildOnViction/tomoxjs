@@ -91,6 +91,26 @@ commander
     })
 
 commander
+    .command('orders list')
+    .option('-b, --baseToken <baseToken>', 'base token')
+    .option('-q, --quoteToken <quoteToken>', 'quote token')
+    .action(async (params) => {
+        await tomox.getOrders(params).then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
+
+commander
+    .command('orderbook')
+    .requiredOption('-b, --baseToken <baseToken>', 'base token')
+    .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
+    .action(async (params) => {
+        await tomox.getOrderBook(params).then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
+
+commander
     .command('info')
     .action(async () => {
         await tomox.getRelayerInfo().then(data => {

@@ -427,6 +427,78 @@ class TomoXJS {
             })
         })
     }
+    getOrders(params) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerUri, '/api/orders')
+
+            let qs = {
+                    address: this.coinbase
+                }
+
+            if (params.quoteToken && params.baseToken) {
+                qs.baseToken = params.baseToken
+                qs.quoteToken = params.quoteToken
+            }
+
+            let options = {
+                method: 'GET',
+                url: url,
+                qs: qs,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+
+                try {
+                    let data = (body || {}).data
+
+                    return resolve(data)
+                } catch (e) {
+                    return reject(Error('Can not get orders, check relayer uri again'))
+                }
+            })
+        })
+    }
+    getOrderBook(params) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerUri, '/api/orderbook')
+
+            let qs = { }
+
+            qs.baseToken = params.baseToken
+            qs.quoteToken = params.quoteToken
+
+            let options = {
+                method: 'GET',
+                url: url,
+                qs: qs,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+
+                try {
+                    let data = (body || {}).data
+
+                    return resolve(data)
+                } catch (e) {
+                    return reject(Error('Can not get orders, check relayer uri again'))
+                }
+            })
+        })
+    }
 }
 
 module.exports = TomoXJS
