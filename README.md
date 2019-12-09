@@ -141,3 +141,26 @@ Options:
   -n, --nonce <nonce>  nonce (default: 0)
   -h, --help           output usage information
 ```
+
+### Get User Order List CLI
+```bash
+$ ./tomoxjs orders -h
+Usage: tomoxjs orders [options]
+
+Options:
+  -b, --baseToken <baseToken>    base token
+  -q, --quoteToken <quoteToken>  quote token
+  -h, --help                     output usage information
+
+```
+
+### Get Orderbook CLI
+```bash
+$ ./tomoxjs orderbook -h
+Usage: tomoxjs orderbook [options]
+
+Options:
+  -b, --baseToken <baseToken>    base token
+  -q, --quoteToken <quoteToken>  quote token
+  -h, --help                     output usage information
+```
