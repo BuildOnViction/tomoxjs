@@ -164,3 +164,15 @@ Options:
   -q, --quoteToken <quoteToken>  quote token
   -h, --help                     output usage information
 ```
+
+### Get OHLCV CLI
+```bash
+$ ./tomoxjs ohlcv --help
+Usage: tomoxjs ohlcv [options]
+
+Options:
+  -b, --baseToken <baseToken>        base token
+  -q, --quoteToken <quoteToken>      quote token
+  -i, --timeInternal <timeInterval>  time interval, candle size. Valid values: 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 1w, 1mo (1 month)
+  -h, --help                         output usage information
+```
