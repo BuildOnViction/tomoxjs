@@ -499,6 +499,41 @@ class TomoXJS {
             })
         })
     }
+    getOHLCV(params) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerUri, '/api/ohlcv')
+
+            let qs = { }
+
+            qs.baseToken = params.baseToken
+            qs.quoteToken = params.quoteToken
+            qs.timeInterval = params.timeInterval
+
+            let options = {
+                method: 'GET',
+                url: url,
+                qs: qs,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+
+                try {
+                    let data = (body || {}).data
+
+                    return resolve(data)
+                } catch (e) {
+                    return reject(Error('Can not get orders, check relayer uri again'))
+                }
+            })
+        })
+    }
 }
 
 module.exports = TomoXJS
