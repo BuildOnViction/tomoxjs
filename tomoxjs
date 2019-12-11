@@ -81,7 +81,6 @@ commander
     .requiredOption('-s, --hash <hash>', 'hash', collect, [])
     .option('-n, --nonce <nonce>', 'nonce', 0)
     .action(async (params) => {
-        console.log(params.hash)
         if (params.hash.length === 1) {
             await tomox.cancelOrder(params.hash[0], params.nonce).then(data => {
                 console.log(data)
