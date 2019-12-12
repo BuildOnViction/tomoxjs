@@ -152,8 +152,8 @@ class TomoXJS {
     getOrderCancelHash(oc) {
         return ethers
             .utils.solidityKeccak256(
-                ['bytes', 'uint256', 'bytes', 'uint256', 'string', 'bytes'],
-                [oc.orderHash, oc.nonce, oc.userAddress, oc.orderID, oc.status, oc.exchangeAddress]
+                ['bytes', 'uint256', 'bytes', 'uint256', 'string', 'bytes', 'bytes', 'bytes'],
+                [oc.orderHash, oc.nonce, oc.userAddress, oc.orderID, oc.status, oc.exchangeAddress, oc.baseToken, oc.quoteToken]
             )
     }
     createManyOrders(orders) {
@@ -300,13 +300,15 @@ class TomoXJS {
                 const oc = {}
                 oc.orderHash = orderHash
                 oc.nonce = String(nonce || await this.getOrderNonce())
-                let { exchangeAddress, userAddress, orderID } = await this.getOrderByHash(orderHash)
+                let { quoteToken, baseToken, exchangeAddress, userAddress, orderID } = await this.getOrderByHash(orderHash)
                 if (!orderID) {
                     return reject(Error('Order is still in pool, not ready to cancel'))
                 }
                 oc.userAddress = ethers.utils.getAddress(userAddress)
                 oc.exchangeAddress = ethers.utils.getAddress(exchangeAddress)
                 oc.orderID = orderID
+                oc.quoteToken = quoteToken
+                oc.baseToken = baseToken
                 oc.status = 'CANCELLED'
                 oc.hash = this.getOrderCancelHash(oc)
 
