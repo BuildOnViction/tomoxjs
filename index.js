@@ -506,6 +506,10 @@ class TomoXJS {
                 qs.quoteToken = params.quoteToken
             }
 
+            if (params.status) {
+                qs.orderStatus = params.status
+            }
+
             let options = {
                 method: 'GET',
                 url: url,
