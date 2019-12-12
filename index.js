@@ -307,8 +307,8 @@ class TomoXJS {
                 oc.userAddress = ethers.utils.getAddress(userAddress)
                 oc.exchangeAddress = ethers.utils.getAddress(exchangeAddress)
                 oc.orderID = orderID
-                oc.quoteToken = quoteToken
-                oc.baseToken = baseToken
+                oc.quoteToken = ethers.utils.getAddress(quoteToken)
+                oc.baseToken = ethers.utils.getAddress(baseToken)
                 oc.status = 'CANCELLED'
                 oc.hash = this.getOrderCancelHash(oc)
 
@@ -353,7 +353,7 @@ class TomoXJS {
                     const oc = {}
                     oc.orderHash = orderHash
                     oc.nonce = String(nonce)
-                    let { exchangeAddress, userAddress, orderID } = await this.getOrderByHash(orderHash)
+                    let { baseToken, quoteToken, exchangeAddress, userAddress, orderID } = await this.getOrderByHash(orderHash)
                     if (!orderID) {
                         return reject(Error('Order is still in pool, not ready to cancel'))
                     }
@@ -361,6 +361,8 @@ class TomoXJS {
                     oc.exchangeAddress = ethers.utils.getAddress(exchangeAddress)
                     oc.orderID = orderID
                     oc.status = 'CANCELLED'
+                    oc.quoteToken = ethers.utils.getAddress(quoteToken)
+                    oc.baseToken = ethers.utils.getAddress(baseToken)
                     oc.hash = this.getOrderCancelHash(oc)
 
                     const signature = await this.wallet.signMessage(ethers.utils.arrayify(oc.hash))
