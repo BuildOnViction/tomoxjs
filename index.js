@@ -535,6 +535,34 @@ class TomoXJS {
             })
         })
     }
+    getOrderByHash(hash) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerUri, '/api/orders', hash)
+
+            let options = {
+                method: 'GET',
+                url: url,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+
+                try {
+                    let data = (body || {}).data
+
+                    return resolve(data)
+                } catch (e) {
+                    return reject(Error('Can not get orders, check relayer uri again'))
+                }
+            })
+        })
+    }
     getOrderBook(params) {
         return new Promise((resolve, reject) => {
             let url = urljoin(this.relayerUri, '/api/orderbook')

@@ -103,11 +103,22 @@ commander
 
 commander
     .command('orders list')
+    .alias('list')
     .option('-b, --baseToken <baseToken>', 'base token')
     .option('-q, --quoteToken <quoteToken>', 'quote token')
     .option('-s, --status <status>', 'order status')
     .action(async (params) => {
         await tomox.getOrders(params).then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
+
+commander
+    .command('orders get')
+    .alias('get')
+    .requiredOption('-s, --hash <hash>', 'order hash')
+    .action(async (params) => {
+        await tomox.getOrderByHash(params.hash).then(data => {
             console.log(data)
         }).catch(e => console.log(e))
     })
