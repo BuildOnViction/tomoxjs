@@ -87,7 +87,7 @@ commander
             }).catch(e => console.log(e))
         }
         if (params.hash.length > 1) {
-            await tomox.cancelManyOrders(params.hash).then(data => {
+            await tomox.cancelManyOrders(params.hash, params.nonce).then(data => {
                 console.log(data)
             }).catch(e => console.log(e))
         }

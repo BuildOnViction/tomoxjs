@@ -343,12 +343,12 @@ class TomoXJS {
             }
         })
     }
-    cancelManyOrders(orderHashes) {
+    cancelManyOrders(orderHashes, nonce = 0) {
         return new Promise(async (resolve, reject) => {
 
             try {
                 let ret = []
-                let nonce = await this.getOrderNonce()
+                let nonce = String(nonce || await this.getOrderNonce())
                 for (let orderHash of orderHashes) {
                     const oc = {}
                     oc.orderHash = orderHash
