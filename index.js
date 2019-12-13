@@ -348,7 +348,7 @@ class TomoXJS {
 
             try {
                 let ret = []
-                let nonce = String(nonce || await this.getOrderNonce())
+                nonce = String(nonce || await this.getOrderNonce())
                 for (let orderHash of orderHashes) {
                     const oc = {}
                     oc.orderHash = orderHash
