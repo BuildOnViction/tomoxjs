@@ -50,6 +50,16 @@ commander
     })
 
 commander
+    .command('config')
+    .action(() => {
+        console.log(`
+        configPath: ${configPath}
+        DEX_URI: ${process.env.DEX_URI}
+        TRADER_PKEY: ******
+        `)
+    })
+
+commander
     .command('create')
     .option('-b, --baseToken <baseToken>', 'base token', '0xBD8b2Fb871F97b2d5F0A1af3bF73619b09174B2A')
     .option('-q, --quoteToken <quoteToken>', 'quote token', '0x0000000000000000000000000000000000000001')
