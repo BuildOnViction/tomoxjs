@@ -24,10 +24,6 @@ class TomoXJS {
                 resolve()
             })
             ws.on('open', function connection() {
-                ws.on('message', function incoming(message) {
-                    console.log('%s', message)
-                })
-
                 ws.send(JSON.stringify({
                     channel: 'price_board',
                     event: {
@@ -38,6 +34,7 @@ class TomoXJS {
                         }
                     }
                 }))
+                resolve(ws)
             })
         })
     }
@@ -49,10 +46,6 @@ class TomoXJS {
                 resolve()
             })
             ws.on('open', function connection() {
-                ws.on('message', function incoming(message) {
-                    console.log('%s', message)
-                })
-
                 ws.send(JSON.stringify({
                     channel: 'orderbook',
                     event: {
@@ -63,6 +56,7 @@ class TomoXJS {
                         }
                     }
                 }))
+                resolve(ws)
             })
         })
     }
@@ -74,10 +68,6 @@ class TomoXJS {
                 resolve()
             })
             ws.on('open', function connection() {
-                ws.on('message', function incoming(message) {
-                    console.log('%s', message)
-                })
-
                 ws.send(JSON.stringify({
                     channel: 'orderbook',
                     event: {
@@ -88,6 +78,7 @@ class TomoXJS {
                         }
                     }
                 }))
+                resolve(ws)
             })
         })
     }
@@ -99,16 +90,13 @@ class TomoXJS {
                 resolve()
             })
             ws.on('open', function connection() {
-                ws.on('message', function incoming(message) {
-                    console.log('%s', message)
-                })
-
                 ws.send(JSON.stringify({
                     channel: 'markets',
                     event: {
                         type: 'SUBSCRIBE'
                     }
                 }))
+                resolve(ws)
             })
         })
     }

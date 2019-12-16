@@ -172,8 +172,10 @@ commander
     .requiredOption('-b, --baseToken <baseToken>', 'base token')
     .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
     .action(async (params) => {
-        await tomox.watchOrderBook(params).then(data => {
-            console.log(data)
+        await tomox.watchOrderBook(params).then(ws=> {
+            ws.on('message', (message) => {
+                console.log('%s', message)
+            })
         }).catch(e => console.log(e))
     })
 
@@ -183,7 +185,9 @@ commander
     .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
     .action(async (params) => {
         await tomox.watchTrades(params).then(data => {
-            console.log(data)
+            ws.on('message', (message) => {
+                console.log('%s', message)
+            })
         }).catch(e => console.log(e))
     })
 
@@ -194,7 +198,9 @@ commander
     .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
     .action(async (params) => {
         await tomox.watchPriceBoard(params).then(data => {
-            console.log(data)
+            ws.on('message', (message) => {
+                console.log('%s', message)
+            })
         }).catch(e => console.log(e))
     })
 
@@ -203,7 +209,9 @@ commander
     .alias('markets')
     .action(async () => {
         await tomox.watchMarkets().then(data => {
-            console.log(data)
+            ws.on('message', (message) => {
+                console.log('%s', message)
+            })
         }).catch(e => console.log(e))
     })
 
