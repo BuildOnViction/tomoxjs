@@ -27,7 +27,8 @@
         "ethers": "^4.0.37",
         "inquirer": "^7.0.0",
         "request": "^2.88.0",
-        "url-join": "^4.0.1"
+        "url-join": "^4.0.1",
+        "ws": "^7.2.1"
     },
     "devDependencies": {
         "eslint": "^6.5.1",

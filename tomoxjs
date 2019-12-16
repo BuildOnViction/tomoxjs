@@ -22,6 +22,7 @@ if (!process.env.DEX_URI || !process.env.TRADER_PKEY) {
 
 const tomox = new TomoXJS(
     process.env.DEX_URI,
+    process.env.DEX_WS_URI,
     process.env.TRADER_PKEY)
 
 commander
@@ -39,10 +40,14 @@ commander
             type : 'input',
             name : 'dexUri',
             message : 'Enter DEX Uri (https://dex.tomochain.com)...'
+        }, {
+            type : 'input',
+            name : 'dexWsUri',
+            message : 'Enter DEX WebSocket Uri (wss://dex.tomochain.com)...'
         }]
         prompt(questions).then( answers => {
             let tomoxjsPath = path.resolve(require('os').homedir(), '.tomoxjs')
-            fs.writeFile(tomoxjsPath, `DEX_URI=${answers.dexUri}\nTRADER_PKEY=${answers.traderPKey}\n`, function (err) {
+            fs.writeFile(tomoxjsPath, `DEX_URI=${answers.dexUri}\nDEX_WS_URI=${answers.dexWsUri}\nTRADER_PKEY=${answers.traderPKey}\n`, function (err) {
                 if (err) throw err;
                 console.log('Saved!');
             });
@@ -112,7 +117,7 @@ commander
     })
 
 commander
-    .command('orders list')
+    .command('o-list')
     .alias('list')
     .option('-b, --baseToken <baseToken>', 'base token')
     .option('-q, --quoteToken <quoteToken>', 'quote token')
@@ -124,7 +129,7 @@ commander
     })
 
 commander
-    .command('orders get')
+    .command('o-get')
     .alias('get')
     .requiredOption('-s, --hash <hash>', 'order hash')
     .action(async (params) => {
@@ -158,6 +163,46 @@ commander
     .command('info')
     .action(async () => {
         await tomox.getRelayerInfo().then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
+
+commander
+    .command('ws-orderbook')
+    .requiredOption('-b, --baseToken <baseToken>', 'base token')
+    .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
+    .action(async (params) => {
+        await tomox.watchOrderBook(params).then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
+
+commander
+    .command('ws-trades')
+    .requiredOption('-b, --baseToken <baseToken>', 'base token')
+    .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
+    .action(async (params) => {
+        await tomox.watchTrades(params).then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
+
+commander
+    .command('ws-price-board')
+    .alias('price-board')
+    .requiredOption('-b, --baseToken <baseToken>', 'base token')
+    .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
+    .action(async (params) => {
+        await tomox.watchPriceBoard(params).then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
+
+commander
+    .command('ws-markets')
+    .alias('markets')
+    .action(async () => {
+        await tomox.watchMarkets().then(data => {
             console.log(data)
         }).catch(e => console.log(e))
     })

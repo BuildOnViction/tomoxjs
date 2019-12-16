@@ -3,15 +3,114 @@ const ethers = require('ethers')
 const request = require('request')
 const urljoin = require('url-join');
 const BigNumber = require('bignumber.js')
+const WebSocket = require('ws')
 
 class TomoXJS {
     constructor (
         relayerUri = 'https://dex.tomochain.com',
+        relayerWsUri = 'wss://dex.tomochain.com',
         pkey = '0xb377a94c7f88c55e4bc83560659ca4cbf6bd17e2d6ab2d32663d9d09ec9766f7' // sample
     ) {
         this.relayerUri = relayerUri
+        this.relayerWsUri = relayerWsUri
         this.wallet = new ethers.Wallet(pkey)
         this.coinbase = this.wallet.address
+    }
+    watchPriceBoard({ baseToken, quoteToken }) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerWsUri, 'socket')
+            const ws = new WebSocket(url)
+            ws.on('close', () => { 
+                resolve()
+            })
+            ws.on('open', function connection() {
+                ws.on('message', function incoming(message) {
+                    console.log('%s', message)
+                })
+
+                ws.send(JSON.stringify({
+                    channel: 'price_board',
+                    event: {
+                        type: 'SUBSCRIBE',
+                        payload: {
+                            baseToken: baseToken,
+                            quoteToken: quoteToken
+                        }
+                    }
+                }))
+            })
+        })
+    }
+    watchTrades({ baseToken, quoteToken }) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerWsUri, 'socket')
+            const ws = new WebSocket(url)
+            ws.on('close', () => { 
+                resolve()
+            })
+            ws.on('open', function connection() {
+                ws.on('message', function incoming(message) {
+                    console.log('%s', message)
+                })
+
+                ws.send(JSON.stringify({
+                    channel: 'orderbook',
+                    event: {
+                        type: 'SUBSCRIBE',
+                        payload: {
+                            baseToken: baseToken,
+                            quoteToken: quoteToken
+                        }
+                    }
+                }))
+            })
+        })
+    }
+    watchOrderBook({ baseToken, quoteToken }) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerWsUri, 'socket')
+            const ws = new WebSocket(url)
+            ws.on('close', () => { 
+                resolve()
+            })
+            ws.on('open', function connection() {
+                ws.on('message', function incoming(message) {
+                    console.log('%s', message)
+                })
+
+                ws.send(JSON.stringify({
+                    channel: 'orderbook',
+                    event: {
+                        type: 'SUBSCRIBE',
+                        payload: {
+                            baseToken: baseToken,
+                            quoteToken: quoteToken
+                        }
+                    }
+                }))
+            })
+        })
+    }
+    watchMarkets() {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerWsUri, 'socket')
+            const ws = new WebSocket(url)
+            ws.on('close', () => { 
+                resolve()
+            })
+            ws.on('open', function connection() {
+                ws.on('message', function incoming(message) {
+                    console.log('%s', message)
+                })
+
+                ws.send(JSON.stringify({
+                    channel: 'markets',
+                    event: {
+                        type: 'SUBSCRIBE'
+                    }
+                }))
+            })
+        })
     }
     getOrderNonce() {
         return new Promise((resolve, reject) => {
