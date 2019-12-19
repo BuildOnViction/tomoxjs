@@ -23,11 +23,24 @@ const TomoX = require('tomoxjs')
 
 
 const relayerUri = 'https://dex.tomochain.com'  // TomoChain Relayer URL
+const relayerWsUri = 'wss://dex.tomochain.com'  // TomoChain Relayer URL
 const pkey = '0x0' // your private key
 
-const tomox = new TomoX(relayerUri, pkey)
+const tomox = new TomoX(relayerUri, relayerWsUri, pkey)
 ```
 
+## Wallet providers
+TomoXJS suports wallet providers that have `signMessage` function, and you have to init `coinbase` for the SDK.
+
+For example:
+```
+let web3 = new Web3()
+// create signMessage function
+let wallet = web3.eth.accounts
+wallet.signMessage = web3.eth.accounts.sign
+tomox.wallet = wallet
+tomox.coinbase = web3.eth.defaultAccount
+```
 
 ### Create order
 Before creating an order, make sure you have enough balance for the trade and fee.
