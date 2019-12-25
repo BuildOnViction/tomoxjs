@@ -236,11 +236,80 @@ class TomoXJS {
             ],
         )
     }
+
+    getLendingHash(order) {
+        if (order.type === 'MO') {
+            return ethers.utils.solidityKeccak256(
+                [
+                    'bytes',
+                    'bytes',
+                    'bytes',
+                    'bytes',
+                    'uint256',
+                    'uint256',
+                    'string',
+                    'string',
+                    'string',
+                    'uint256',
+                ],
+                [
+                    order.relayerAddress,
+                    order.userAddress,
+                    order.collateralToken,
+                    order.lendingToken,
+                    order.quantity,
+                    order.term,
+                    order.side,
+                    order.status,
+                    order.type,
+                    order.nonce
+                ],
+            )
+        }
+        console.log(order.exchangeAddress,  order.userAddress, order.collateralToken, order.lendingToken, order.quantity, order.term, order.interest, order.side,order.status, order.type, order.nonce)
+        return ethers.utils.solidityKeccak256(
+            [
+                'bytes',
+                'bytes',
+                'bytes',
+                'bytes',
+                'uint256',
+                'uint256',
+                'uint256',
+                'string',
+                'string',
+                'string',
+                'uint256',
+            ],
+            [
+                order.relayerAddress,
+                order.userAddress,
+                order.collateralToken,
+                order.lendingToken,
+                order.quantity,
+                order.term,
+                order.interest,
+                order.side,
+                order.status,
+                order.type,
+                order.nonce
+            ],
+        )
+    }
+
     getOrderCancelHash(oc) {
         return ethers
             .utils.solidityKeccak256(
                 ['bytes', 'uint256', 'bytes', 'uint256', 'string', 'bytes', 'bytes', 'bytes'],
                 [oc.orderHash, oc.nonce, oc.userAddress, oc.orderID, oc.status, oc.exchangeAddress, oc.baseToken, oc.quoteToken]
+            )
+    }
+    getLendingCancelHash(oc) {
+        console.log(oc.lendingHash, oc.nonce, oc.userAddress, oc.lendingID, oc.term, oc.interest,oc.status, oc.relayerAddress, oc.collateralToken, oc.lendingToken)
+        return ethers
+            .utils.solidityKeccak256(
+                ['bytes', 'uint256', 'bytes', 'uint256', 'uint256', 'uint256', 'string', 'bytes', 'bytes', 'bytes'],
+                [oc.lendingHash, oc.nonce, oc.userAddress, oc.lendingID, oc.term, oc.interest, oc.status, oc.relayerAddress, oc.collateralToken, oc.lendingToken]
             )
     }
     createManyOrders(orders) {
@@ -719,6 +788,262 @@ class TomoXJS {
             })
         })
     }
+
+    getLendingNonce() {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerUri, '/api/lending/nonce')
+            var options = {
+                method: 'GET',
+                url: url,
+                qs: {
+                    address: this.coinbase
+                },
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+
+                try {
+                    let nonce = ((body || {}).data || 0).toString()
+                    return resolve(nonce)
+                } catch (e) {
+                    return reject(Error('Can not get nonce, check relayer uri again'))
+                }
+
+            })
+        })
+    }
+
+    getLendingByHash(hash) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerUri, '/api/lending', hash)
+            let options = {
+                method: 'GET',
+                url: url,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+
+                try {
+                    let order = (body || {}).data
+                    return resolve(order)
+                } catch (e) {
+                    return reject(Error('Can not get order, check relayer uri again'))
+                }
+            })
+        })
+    }
+
+    createLending(order) {
+        return new Promise(async (resolve, reject) => {
+            // try {
+                let relayer = await this.getRelayerInfo()
+                let url = urljoin(this.relayerUri, '/api/lending')
+                let nonce = order.nonce || await this.getLendingNonce()
+                let o = {
+                    userAddress: this.coinbase,
+                    relayerAddress: order.relayerAddress || relayer.relayerAddress,
+                    collateralToken: order.collateralToken,
+                    lendingToken: order.lendingToken,
+                    term: order.term,
+                    interest: order.interest,
+                    side: order.side || 'BUY',
+                    type: order.type || 'LO',
+                    status: 'NEW'
+                }
+
+                let collateralToken = await this.getTokenInfo(order.collateralToken)
+                let lendingToken = await this.getTokenInfo(order.lendingToken)
+
+                if (!collateralToken || !lendingToken) {
+                    return reject(Error('Can not get token info'))
+                }
+
+                o.quantity = new BigNumber(order.quantity)
+                    .multipliedBy(10 ** collateralToken.decimals).toString(10)
+
+                o.nonce = String(nonce)
+                o.hash = this.getLendingHash(o)
+                let signature = await this.wallet.signMessage(ethers.utils.arrayify(o.hash))
+                let { r, s, v } = ethers.utils.splitSignature(signature)
+
+                o.signature = { R: r, S: s, V: v }
+
+                let options = {
+                    method: 'POST',
+                    url: url,
+                    json: true,
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: o
+                }
+                request(options, (error, response, body) => {
+                    if (error) {
+                        return reject(error)
+                    }
+                    if (response.statusCode !== 200 && response.statusCode !== 201) {
+                        return reject(body)
+                    }
+
+                    return resolve(o)
+
+                })
+            // } catch(e) {
+            //     return reject(e)
+            // }
+        })
+    }
+    cancelLending(lendingHash, nonce = 0) {
+        return new Promise(async (resolve, reject) => {
+
+            try {
+                const oc = {}
+                oc.lendingHash = lendingHash
+                oc.nonce = String(nonce || await this.getLendingNonce())
+                let { lendingToken, collateralToken, relayerAddress, userAddress, lendingID, term, interest } = await this.getLendingByHash(lendingHash)
+                
+                if (!lendingID) {
+                    return reject(Error('Lending is still in pool, not ready to cancel'))
+                }
+                oc.userAddress = ethers.utils.getAddress(userAddress)
+                oc.relayerAddress = ethers.utils.getAddress(relayerAddress)
+                oc.lendingID = lendingID
+                oc.collateralToken = ethers.utils.getAddress(collateralToken)
+                oc.lendingToken = ethers.utils.getAddress(lendingToken)
+                oc.status = 'CANCELLED'
+                oc.term = term
+                oc.interest = interest
+                oc.hash = this.getLendingCancelHash(oc)
+                
+
+                const signature = await this.wallet.signMessage(ethers.utils.arrayify(oc.hash))
+                const { r, s, v } = ethers.utils.splitSignature(signature)
+
+                oc.signature = { R: r, S: s, V: v }
+
+                let url = urljoin(this.relayerUri, '/api/lending/cancel')
+                let options = {
+                    method: 'POST',
+                    url: url,
+                    json: true,
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: oc
+                }
+                console.log(oc)
+                request(options, (error, response, body) => {
+                    if (error) {
+                        return reject(error)
+                    }
+                    if (response.statusCode !== 200 && response.statusCode !== 201) {
+                        return reject(body)
+                    }
+
+                    return resolve(oc)
+
+                })
+            } catch(e) {
+                return reject(e)
+            }
+        })
+    }
+    createWsLending(order) {
+        const _self = this;
+        return new Promise(async(resolve, reject) => {
+
+            _self._getOrder(order).then((order) => {
+                let url = urljoin(_self.relayerWsUri, 'socket')
+                const ws = new WebSocket(url)
+                ws.on('close', () => { 
+                    resolve()
+                })
+                ws.on('open', function connection() {
+                    ws.send(JSON.stringify({
+                        channel: 'lending_order',
+                        event: {
+                            type: 'NEW_LENDING_ORDER',
+                            payload: order
+                        }
+                    }))
+                    resolve(ws)
+                })
+            }).catch(ex => {
+                reject(ex)
+            })
+        })
+    }
+
+    async _getOrder(order) {
+        
+        
+        let nonce = order.nonce || await this.getLendingNonce()
+        let o = {
+            userAddress: this.coinbase,
+            relayerAddress: order.relayerAddress || relayer.relayerAddress,
+            collateralToken: order.collateralToken,
+            lendingToken: order.lendingToken,
+            term: order.term,
+            interest: order.interest,
+            side: order.side || 'BUY',
+            type: order.type || 'LO',
+            status: 'NEW'
+        }
+
+        let collateralToken = await this.getTokenInfo(order.collateralToken)
+        let lendingToken = await this.getTokenInfo(order.lendingToken)
+
+        if (!collateralToken || !lendingToken) {
+            return reject(Error('Can not get token info'))
+        }
+
+        o.quantity = new BigNumber(order.quantity)
+            .multipliedBy(10 ** collateralToken.decimals).toString(10)
+
+        o.nonce = String(nonce)
+        o.hash = this.getLendingHash(o)
+        let signature = await this.wallet.signMessage(ethers.utils.arrayify(o.hash))
+        let { r, s, v } = ethers.utils.splitSignature(signature)
+
+        o.signature = { R: r, S: s, V: v }
+        return o
+    }
+
+    watchLendingOrderBook({ term, lendingToken }) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerWsUri, 'socket')
+            const ws = new WebSocket(url)
+            ws.on('close', () => { 
+                resolve()
+            })
+            ws.on('open', function connection() {
+                ws.send(JSON.stringify({
+                    channel: 'lending_orderbook',
+                    event: {
+                        type: 'SUBSCRIBE',
+                        payload: {
+                            term: term,
+                            lendingToken: lendingToken
+                        }
+                    }
+                }))
+                resolve(ws)
+            })
+        })
+    }
+
 }
 
 module.exports = TomoXJS

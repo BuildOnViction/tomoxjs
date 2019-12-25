@@ -91,6 +91,7 @@ function collect(value, previous) {
       return previous.concat([value]);
 }
 
+
 commander
     .command('cancel')
     .requiredOption('-s, --hash <hash>', 'hash', collect, [])
@@ -215,4 +216,109 @@ commander
         }).catch(e => console.log(e))
     })
 
+    function collect(value, previous) {
+        return previous.concat([value]);
+  }
+ 
+  commander
+    .command('lending-hash')
+    .alias('get')
+    .requiredOption('-h , --hash <hash>', 'lending hash')
+    .action(async (params) => {
+        await tomox.getLendingByHash(params.hash).then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
+
+
+  commander
+    .command('lending-nonce')
+    .action(async () => {
+        await tomox.getLendingNonce().then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
+
+commander
+    .command('lending-create')
+    .option('-c, --collateralToken <collateralToken>', 'collateral token', '0xBD8b2Fb871F97b2d5F0A1af3bF73619b09174B2A')
+    .option('-l, --lendingToken <lendingToken>', 'lending token', '0x0000000000000000000000000000000000000001')
+    .option('-q, --quantity <quantity>', 'quantity', '2')
+    .option('-i, --interest <interest>', 'interest', '10')
+    .option('-term, --term <term>', 'term', '30')
+    .option('-s, --side <side>', 'side', 'LEND')
+    .option('-t, --type <type>', 'type', 'LO')
+    .option('-r, --relayerAddress <relayerAddress>', 'relayerAddress', "0x0000000000000000000000000000000000000001")
+    .option('-n, --nonce <nonce>')
+    .action(async (params) => {
+        await tomox.createLending({
+            collateralToken: params.collateralToken,
+            lendingToken: params.lendingToken,
+            relayerAddress: params.relayerAddress,
+            quantity: params.quantity,
+            interest: params.interest,
+            term: params.term,
+            side: params.side,
+            type: params.type,
+            nonce: params.nonce,
+        }).then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
+
+commander
+    .command('lending-create-ws')
+    .option('-c, --collateralToken <collateralToken>', 'collateral token', '0xBD8b2Fb871F97b2d5F0A1af3bF73619b09174B2A')
+    .option('-l, --lendingToken <lendingToken>', 'lending token', '0x0000000000000000000000000000000000000001')
+    .option('-q, --quantity <quantity>', 'quantity', '2')
+    .option('-i, --interest <interest>', 'interest', '10')
+    .option('-term, --term <term>', 'term', '30')
+    .option('-s, --side <side>', 'side', 'LEND')
+    .option('-t, --type <type>', 'type', 'LO')
+    .option('-r, --relayerAddress <relayerAddress>', 'relayerAddress', "0x0000000000000000000000000000000000000001")
+    .option('-n, --nonce <nonce>')
+    .action(async (params) => {
+
+        await tomox.createWsLending({
+            collateralToken: params.collateralToken,
+            lendingToken: params.lendingToken,
+            relayerAddress: params.relayerAddress,
+            quantity: params.quantity,
+            interest: params.interest,
+            term: params.term,
+            side: params.side,
+            type: params.type,
+            nonce: params.nonce,
+        }).then(ws => {
+            ws.on('message', (message) => {
+                console.log('%s', message)
+            })
+        }).catch(e => console.log(e))
+    })
+
+commander
+    .command('lending-cancel')
+    .requiredOption('-i, --hash <hash>')
+    .option('-n, --nonce <nonce>', 'nonce', 0)
+    .action(async (params) => {
+        await tomox.cancelLending(params.hash, params.nonce).then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+        
+    })
+commander
+    .command('ws-lending-orderbook')
+    .requiredOption('-t, --term <term>', '30')
+    .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
+    .action(async (params) => {
+        await tomox.watchLendingOrderBook(params).then(ws=> {
+            ws.on('message', (message) => {
+                console.log('%s', message)
+            })
+        }).catch(e => console.log(e))
+    })
 commander.parse(process.argv)
+
+
+
+
