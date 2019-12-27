@@ -1043,6 +1043,28 @@ class TomoXJS {
             })
         })
     }
+    watchLendingTrade({ term, lendingToken }) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerWsUri, 'socket')
+            const ws = new WebSocket(url)
+            ws.on('close', () => { 
+                resolve()
+            })
+            ws.on('open', function connection() {
+                ws.send(JSON.stringify({
+                    channel: 'lending_trades',
+                    event: {
+                        type: 'SUBSCRIBE',
+                        payload: {
+                            term: term,
+                            lendingToken: lendingToken
+                        }
+                    }
+                }))
+                resolve(ws)
+            })
+        })
+    }
 
 }
 

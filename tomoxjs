@@ -317,6 +317,19 @@ commander
             })
         }).catch(e => console.log(e))
     })
+
+commander
+    .command('ws-lending-trade')
+    .requiredOption('-t, --term <term>', '30')
+    .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
+    .action(async (params) => {
+        await tomox.watchLendingTrade(params).then(ws=> {
+            ws.on('message', (message) => {
+                console.log('%s', message)
+            })
+        }).catch(e => console.log(e))
+    })
+
 commander.parse(process.argv)
 
 
