@@ -18,7 +18,7 @@ class TomoXJS {
     }
     watchPriceBoard({ baseToken, quoteToken }) {
         return new Promise((resolve, reject) => {
-            let url = urljoin(this.relayerWsUri, 'socket')
+            let url = urljoin(this.relayerWsUri)
             const ws = new WebSocket(url)
             ws.on('close', () => { 
                 resolve()
