@@ -188,7 +188,7 @@ commander
     .requiredOption('-b, --baseToken <baseToken>', 'base token')
     .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
     .action(async (params) => {
-        await tomox.watchTrades(params).then(data => {
+        await tomox.watchTrades(params).then(ws => {
             ws.on('message', (message) => {
                 console.log('%s', message)
             })
@@ -201,7 +201,7 @@ commander
     .requiredOption('-b, --baseToken <baseToken>', 'base token')
     .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
     .action(async (params) => {
-        await tomox.watchPriceBoard(params).then(data => {
+        await tomox.watchPriceBoard(params).then(ws => {
             ws.on('message', (message) => {
                 console.log('%s', message)
             })
@@ -212,7 +212,7 @@ commander
     .command('ws-markets')
     .alias('markets')
     .action(async () => {
-        await tomox.watchMarkets().then(data => {
+        await tomox.watchMarkets().then(ws => {
             ws.on('message', (message) => {
                 console.log('%s', message)
             })
