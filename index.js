@@ -40,7 +40,7 @@ class TomoXJS {
     }
     watchTrades({ baseToken, quoteToken }) {
         return new Promise((resolve, reject) => {
-            let url = urljoin(this.relayerWsUri, 'socket')
+            let url = urljoin(this.relayerWsUri)
             const ws = new WebSocket(url)
             ws.on('close', () => { 
                 resolve()
@@ -62,7 +62,7 @@ class TomoXJS {
     }
     watchOrderBook({ baseToken, quoteToken }) {
         return new Promise((resolve, reject) => {
-            let url = urljoin(this.relayerWsUri, 'socket')
+            let url = urljoin(this.relayerWsUri)
             const ws = new WebSocket(url)
             ws.on('close', () => { 
                 resolve()
@@ -84,7 +84,7 @@ class TomoXJS {
     }
     watchMarkets() {
         return new Promise((resolve, reject) => {
-            let url = urljoin(this.relayerWsUri, 'socket')
+            let url = urljoin(this.relayerWsUri)
             const ws = new WebSocket(url)
             ws.on('close', () => { 
                 resolve()
@@ -967,7 +967,7 @@ class TomoXJS {
         return new Promise(async(resolve, reject) => {
 
             _self._getOrder(order).then((order) => {
-                let url = urljoin(_self.relayerWsUri, 'socket')
+                let url = urljoin(_self.relayerWsUri)
                 const ws = new WebSocket(url)
                 ws.on('close', () => { 
                     resolve()
@@ -1025,7 +1025,7 @@ class TomoXJS {
 
     watchLendingOrderBook({ term, lendingToken }) {
         return new Promise((resolve, reject) => {
-            let url = urljoin(this.relayerWsUri, 'socket')
+            let url = urljoin(this.relayerWsUri)
             const ws = new WebSocket(url)
             ws.on('close', () => { 
                 resolve()
@@ -1047,7 +1047,7 @@ class TomoXJS {
     }
     watchLendingTrade({ term, lendingToken }) {
         return new Promise((resolve, reject) => {
-            let url = urljoin(this.relayerWsUri, 'socket')
+            let url = urljoin(this.relayerWsUri)
             const ws = new WebSocket(url)
             ws.on('close', () => { 
                 resolve()
