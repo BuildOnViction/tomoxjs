@@ -18,7 +18,7 @@ class TomoXJS {
     }
     watchPriceBoard({ baseToken, quoteToken }) {
         return new Promise((resolve, reject) => {
-            let url = urljoin(this.relayerWsUri, 'socket')
+            let url = urljoin(this.relayerWsUri)
             const ws = new WebSocket(url)
             ws.on('close', () => { 
                 resolve()
@@ -895,17 +895,19 @@ class TomoXJS {
 
     createLending(order) {
         return new Promise(async (resolve, reject) => {
-            // try {
+            try {
                 let relayer = await this.getRelayerInfo()
                 let url = urljoin(this.relayerUri, '/api/lending')
                 let nonce = order.nonce || await this.getLendingNonce()
+                let interest = new BigNumber(order.interest)
+                    .multipliedBy(10 ** 8).toString(10)
                 let o = {
                     userAddress: this.coinbase,
                     relayerAddress: order.relayerAddress || relayer.relayerAddress,
                     collateralToken: order.collateralToken,
                     lendingToken: order.lendingToken,
                     term: order.term,
-                    interest: order.interest,
+                    interest: interest,
                     side: order.side || 'BUY',
                     type: order.type || 'LO',
                     status: 'NEW'
@@ -948,9 +950,9 @@ class TomoXJS {
                     return resolve(o)
 
                 })
-            // } catch(e) {
-            //     return reject(e)
-            // }
+            } catch(e) {
+                return reject(e)
+            }
         })
     }
     cancelLending(lendingHash, nonce = 0) {
