@@ -297,6 +297,46 @@ commander
     })
 
 commander
+    .command('lending-repay')
+    .requiredOption('-r, --relayerAddress <relayerAddress>')
+    .requiredOption('-l, --lendingToken <lendingToken>')
+    .requiredOption('-t, --term <term>')
+    .requiredOption('-i, --tradeId <tradeId>')
+    .option('-n, --nonce <nonce>')
+    .action(async (params) => {
+        await tomox.repayLending({
+            relayerAddress: params.relayerAddress,
+            lendingToken: params.lendingToken,
+            term: params.term,
+            tradeId: params.tradeId,
+            nonce: params.nonce,
+        }).then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
+
+commander
+    .command('lending-topup')
+    .requiredOption('-r, --relayerAddress <relayerAddress>')
+    .requiredOption('-l, --lendingToken <lendingToken>')
+    .requiredOption('-t, --term <term>')
+    .requiredOption('-q, --quantity <quantity>')
+    .requiredOption('-i, --tradeId <tradeId>')
+    .option('-n, --nonce <nonce>')
+    .action(async (params) => {
+        await tomox.topupLending({
+            relayerAddress: params.relayerAddress,
+            lendingToken: params.lendingToken,
+            term: params.term,
+            quantity: params.quantity,
+            tradeId: params.tradeId,
+            nonce: params.nonce,
+        }).then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
+
+commander
     .command('lending-cancel')
     .requiredOption('-i, --hash <hash>')
     .option('-n, --nonce <nonce>', 'nonce', 0)
@@ -324,6 +364,21 @@ commander
     .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
     .action(async (params) => {
         await tomox.watchLendingTrade(params).then(ws=> {
+            ws.on('message', (message) => {
+                console.log('%s', message)
+            })
+        }).catch(e => console.log(e))
+    })
+
+
+commander
+    .command('ws-lending-ohlcv')
+    .requiredOption('-t, --term <term>', '30')
+    .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
+    .requiredOption('-u, --units <units>', 'min')
+    .requiredOption('-d, --duration <duration>', '1')
+    .action(async (params) => {
+        await tomox.watchLendingOhlcv(params).then(ws=> {
             ws.on('message', (message) => {
                 console.log('%s', message)
             })
