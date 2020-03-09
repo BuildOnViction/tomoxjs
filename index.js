@@ -751,7 +751,6 @@ class TomoXJS {
                 ],
             )
         }
-        console.log(order.exchangeAddress,  order.userAddress, order.collateralToken, order.lendingToken, order.quantity, order.term, order.interest, order.side,order.status, order.type, order.nonce)
         return ethers.utils.solidityKeccak256(
             [
                 'bytes',
@@ -903,7 +902,7 @@ class TomoXJS {
                     .multipliedBy(10 ** 8).toString(10)
                 let o = {
                     userAddress: this.coinbase,
-                    relayerAddress: order.relayerAddress || relayer.relayerAddress,
+                    relayerAddress: order.relayerAddress || relayer.exchangeAddress,
                     collateralToken: order.collateralToken,
                     lendingToken: order.lendingToken,
                     term: order.term,
@@ -993,7 +992,6 @@ class TomoXJS {
                     },
                     body: oc
                 }
-                console.log(oc)
                 request(options, (error, response, body) => {
                     if (error) {
                         return reject(error)
