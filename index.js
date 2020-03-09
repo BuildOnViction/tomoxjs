@@ -781,13 +781,27 @@ class TomoXJS {
             ],
         )
     }
-    getLendingCancelHash(oc) {
-        console.log(oc.lendingHash, oc.nonce, oc.userAddress, oc.lendingID, oc.term, oc.interest,oc.status, oc.relayerAddress, oc.collateralToken, oc.lendingToken)
-        return ethers
-            .utils.solidityKeccak256(
-                ['bytes', 'uint256', 'bytes', 'uint256', 'uint256', 'uint256', 'string', 'bytes', 'bytes', 'bytes'],
-                [oc.lendingHash, oc.nonce, oc.userAddress, oc.lendingID, oc.term, oc.interest, oc.status, oc.relayerAddress, oc.collateralToken, oc.lendingToken]
-            )
+    getLendingCancelHash(order) {
+        return ethers.utils.solidityKeccak256(
+            [
+                'uint256',
+                'string',
+                'bytes',
+                'bytes',
+                'bytes',
+                'uint256',
+                'uint256',
+            ],
+            [
+                order.nonce,
+                order.status,
+                order.relayerAddress,
+                order.userAddress,
+                order.lendingToken,
+                order.term,
+                order.lendingId,
+            ],
+        )
     }
     getRepayLendingHash(order) {
         return ethers.utils.solidityKeccak256(
@@ -955,35 +969,27 @@ class TomoXJS {
             }
         })
     }
-    cancelLending(lendingHash, nonce = 0) {
+    cancelLending(order) {
         return new Promise(async (resolve, reject) => {
-
-            try {
-                const oc = {}
-                oc.lendingHash = lendingHash
-                oc.nonce = String(nonce || await this.getLendingNonce())
-                let { lendingToken, collateralToken, relayerAddress, userAddress, lendingID, term, interest } = await this.getLendingByHash(lendingHash)
-                
-                if (!lendingID) {
-                    return reject(Error('Lending is still in pool, not ready to cancel'))
-                }
-                oc.userAddress = ethers.utils.getAddress(userAddress)
-                oc.relayerAddress = ethers.utils.getAddress(relayerAddress)
-                oc.lendingID = lendingID
-                oc.collateralToken = ethers.utils.getAddress(collateralToken)
-                oc.lendingToken = ethers.utils.getAddress(lendingToken)
-                oc.status = 'CANCELLED'
-                oc.term = term
-                oc.interest = interest
-                oc.hash = this.getLendingCancelHash(oc)
-                
-
-                const signature = await this.wallet.signMessage(ethers.utils.arrayify(oc.hash))
-                const { r, s, v } = ethers.utils.splitSignature(signature)
-
-                oc.signature = { R: r, S: s, V: v }
-
+            // try {
+                let relayer = await this.getRelayerInfo()
                 let url = urljoin(this.relayerUri, '/api/lending/cancel')
+                let nonce = order.nonce || await this.getLendingNonce()
+                let o = {
+                    userAddress: this.coinbase,
+                    relayerAddress: order.relayerAddress || relayer.relayerAddress,
+                    lendingToken: order.lendingToken,
+                    term: order.term,
+                    lendingId: order.lendingId,
+                    status: 'CANCELLED'
+                }
+                o.nonce = String(nonce)
+                o.hash = order.hash
+                let signature = await this.wallet.signMessage(ethers.utils.arrayify(this.getLendingCancelHash(o)))
+                let { r, s, v } = ethers.utils.splitSignature(signature)
+
+                o.signature = { R: r, S: s, V: v }
+
                 let options = {
                     method: 'POST',
                     url: url,
@@ -991,9 +997,8 @@ class TomoXJS {
                     headers: {
                         'content-type': 'application/json'
                     },
-                    body: oc
+                    body: o
                 }
-                console.log(oc)
                 request(options, (error, response, body) => {
                     if (error) {
                         return reject(error)
@@ -1002,12 +1007,12 @@ class TomoXJS {
                         return reject(body)
                     }
 
-                    return resolve(oc)
+                    return resolve(o)
 
                 })
-            } catch(e) {
-                return reject(e)
-            }
+            // } catch(e) {
+            //     return reject(e)
+            // }
         })
     }
     repayLending(order) {
@@ -1022,7 +1027,7 @@ class TomoXJS {
                     lendingToken: order.lendingToken,
                     term: order.term,
                     tradeId: order.tradeId,
-                    status: 'PAYMENT'
+                    status: 'REPAY'
                 }
                 o.nonce = String(nonce)
                 o.hash = this.getRepayLendingHash(o)
@@ -1069,7 +1074,7 @@ class TomoXJS {
                     term: order.term,
                     quantity: order.quantity,
                     tradeId: order.tradeId,
-                    status: 'DEPOSIT'
+                    status: 'TOPUP'
                 }
                 let collateralToken = await this.getTokenInfo(order.collateralToken)
                
