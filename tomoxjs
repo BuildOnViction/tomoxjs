@@ -63,6 +63,7 @@ commander
         console.log(`
         configPath: ${configPath}
         DEX_URI: ${process.env.DEX_URI}
+        DEX_WS_URI: ${process.env.DEX_WS_URI}
         TRADER_PKEY: ******
         `)
     })
