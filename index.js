@@ -835,6 +835,7 @@ class TomoXJS {
                 'bytes',
                 'uint256',
                 'uint256',
+                'bytes',
                 'uint256'
             ],
             [
@@ -845,6 +846,7 @@ class TomoXJS {
                 order.lendingToken,
                 order.term,
                 order.tradeId,
+                order.collateralToken,
                 order.quantity
             ],
         )
@@ -1007,7 +1009,6 @@ class TomoXJS {
                     }
 
                     return resolve(o)
-
                 })
             // } catch(e) {
             //     return reject(e)
@@ -1071,6 +1072,7 @@ class TomoXJS {
                     relayerAddress: order.relayerAddress || relayer.relayerAddress,
                     lendingToken: order.lendingToken,
                     term: order.term,
+                    collateralToken: order.collateralToken,
                     quantity: order.quantity,
                     tradeId: order.tradeId,
                     status: 'TOPUP'

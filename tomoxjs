@@ -324,6 +324,7 @@ commander
     .requiredOption('-r, --relayerAddress <relayerAddress>')
     .requiredOption('-l, --lendingToken <lendingToken>')
     .requiredOption('-t, --term <term>')
+    .requiredOption('-c, --collateralToken <collateralToken>')
     .requiredOption('-q, --quantity <quantity>')
     .requiredOption('-i, --tradeId <tradeId>')
     .option('-n, --nonce <nonce>')
@@ -332,6 +333,7 @@ commander
             relayerAddress: params.relayerAddress,
             lendingToken: params.lendingToken,
             term: params.term,
+            collateralToken: params.collateralToken,
             quantity: params.quantity,
             tradeId: params.tradeId,
             nonce: params.nonce,
