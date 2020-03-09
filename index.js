@@ -40,7 +40,7 @@ class TomoXJS {
     }
     watchTrades({ baseToken, quoteToken }) {
         return new Promise((resolve, reject) => {
-            let url = urljoin(this.relayerWsUri, 'socket')
+            let url = urljoin(this.relayerWsUri)
             const ws = new WebSocket(url)
             ws.on('close', () => { 
                 resolve()
@@ -62,7 +62,7 @@ class TomoXJS {
     }
     watchOrderBook({ baseToken, quoteToken }) {
         return new Promise((resolve, reject) => {
-            let url = urljoin(this.relayerWsUri, 'socket')
+            let url = urljoin(this.relayerWsUri)
             const ws = new WebSocket(url)
             ws.on('close', () => { 
                 resolve()
@@ -84,7 +84,7 @@ class TomoXJS {
     }
     watchMarkets() {
         return new Promise((resolve, reject) => {
-            let url = urljoin(this.relayerWsUri, 'socket')
+            let url = urljoin(this.relayerWsUri)
             const ws = new WebSocket(url)
             ws.on('close', () => { 
                 resolve()
@@ -751,7 +751,6 @@ class TomoXJS {
                 ],
             )
         }
-        console.log(order.exchangeAddress,  order.userAddress, order.collateralToken, order.lendingToken, order.quantity, order.term, order.interest, order.side,order.status, order.type, order.nonce)
         return ethers.utils.solidityKeccak256(
             [
                 'bytes',
@@ -917,7 +916,7 @@ class TomoXJS {
                     .multipliedBy(10 ** 8).toString(10)
                 let o = {
                     userAddress: this.coinbase,
-                    relayerAddress: order.relayerAddress || relayer.relayerAddress,
+                    relayerAddress: order.relayerAddress || relayer.exchangeAddress,
                     collateralToken: order.collateralToken,
                     lendingToken: order.lendingToken,
                     term: order.term,
@@ -1121,7 +1120,7 @@ class TomoXJS {
         return new Promise(async(resolve, reject) => {
 
             _self._getOrder(order).then((order) => {
-                let url = urljoin(_self.relayerWsUri, 'socket')
+                let url = urljoin(_self.relayerWsUri)
                 const ws = new WebSocket(url)
                 ws.on('close', () => { 
                     resolve()
@@ -1179,7 +1178,7 @@ class TomoXJS {
 
     watchLendingOrderBook({ term, lendingToken }) {
         return new Promise((resolve, reject) => {
-            let url = urljoin(this.relayerWsUri, 'socket')
+            let url = urljoin(this.relayerWsUri)
             const ws = new WebSocket(url)
             ws.on('close', () => { 
                 resolve()
@@ -1201,7 +1200,7 @@ class TomoXJS {
     }
     watchLendingTrade({ term, lendingToken }) {
         return new Promise((resolve, reject) => {
-            let url = urljoin(this.relayerWsUri, 'socket')
+            let url = urljoin(this.relayerWsUri)
             const ws = new WebSocket(url)
             ws.on('close', () => { 
                 resolve()
