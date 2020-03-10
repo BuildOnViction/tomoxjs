@@ -324,6 +324,7 @@ commander
     .requiredOption('-r, --relayerAddress <relayerAddress>')
     .requiredOption('-l, --lendingToken <lendingToken>')
     .requiredOption('-t, --term <term>')
+    .requiredOption('-c, --collateralToken <collateralToken>')
     .requiredOption('-q, --quantity <quantity>')
     .requiredOption('-i, --tradeId <tradeId>')
     .option('-n, --nonce <nonce>')
@@ -332,6 +333,7 @@ commander
             relayerAddress: params.relayerAddress,
             lendingToken: params.lendingToken,
             term: params.term,
+            collateralToken: params.collateralToken,
             quantity: params.quantity,
             tradeId: params.tradeId,
             nonce: params.nonce,
@@ -342,10 +344,21 @@ commander
 
 commander
     .command('lending-cancel')
-    .requiredOption('-i, --hash <hash>')
+    .requiredOption('-r, --relayerAddress <relayerAddress>')
+    .requiredOption('-l, --lendingToken <lendingToken>')
+    .requiredOption('-t, --term <term>')
+    .requiredOption('-i, --lendingId <lendingId>')
+    .requiredOption('-H, --cancelHash <cancelHash>')
     .option('-n, --nonce <nonce>', 'nonce', 0)
     .action(async (params) => {
-        await tomox.cancelLending(params.hash, params.nonce).then(data => {
+        await tomox.cancelLending({
+            relayerAddress: params.relayerAddress,
+            lendingToken: params.lendingToken,
+            term: params.term,
+            lendingId: params.lendingId,
+            nonce: params.nonce,
+            hash: params.cancelHash
+        }).then(data => {
             console.log(data)
         }).catch(e => console.log(e))
         
