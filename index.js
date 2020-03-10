@@ -1016,7 +1016,7 @@ class TomoXJS {
                 let nonce = order.nonce || await this.getLendingNonce()
                 let o = {
                     userAddress: this.coinbase,
-                    relayerAddress: order.relayerAddress || relayer.relayerAddress,
+                    relayerAddress: order.relayerAddress || relayer.exchangeAddress,
                     lendingToken: order.lendingToken,
                     term: order.term,
                     tradeId: order.tradeId,
