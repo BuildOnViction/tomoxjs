@@ -363,9 +363,20 @@ commander
         }).catch(e => console.log(e))
         
     })
+
+commander
+    .command('lending-orderbook')
+    .requiredOption('-t, --term <term>', '60')
+    .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
+    .action(async (params) => {
+        await tomox.getLendingOrderBook(params).then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
+
 commander
     .command('ws-lending-orderbook')
-    .requiredOption('-t, --term <term>', '30')
+    .requiredOption('-t, --term <term>', '60')
     .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
     .action(async (params) => {
         await tomox.watchLendingOrderBook(params).then(ws=> {
@@ -377,7 +388,7 @@ commander
 
 commander
     .command('ws-lending-trade')
-    .requiredOption('-t, --term <term>', '30')
+    .requiredOption('-t, --term <term>', '60')
     .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
     .action(async (params) => {
         await tomox.watchLendingTrade(params).then(ws=> {

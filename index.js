@@ -1178,6 +1178,41 @@ class TomoXJS {
         return o
     }
 
+    getLendingOrderBook(params) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerUri, '/api/lending/orderbook')
+
+            let qs = { }
+
+            qs.lendingToken = params.lendingToken
+            qs.term = params.term
+
+            let options = {
+                method: 'GET',
+                url: url,
+                qs: qs,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+
+                try {
+                    let data = (body || {}).data
+
+                    return resolve(data)
+                } catch (e) {
+                    return reject(Error('Can not get orders, check relayer uri again'))
+                }
+            })
+        })
+    }
+
     watchLendingOrderBook({ term, lendingToken }) {
         return new Promise((resolve, reject) => {
             let url = urljoin(this.relayerWsUri)
