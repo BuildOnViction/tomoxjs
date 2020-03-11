@@ -47,7 +47,7 @@ class TomoXJS {
             })
             ws.on('open', function connection() {
                 ws.send(JSON.stringify({
-                    channel: 'orderbook',
+                    channel: 'trades',
                     event: {
                         type: 'SUBSCRIBE',
                         payload: {
@@ -75,6 +75,37 @@ class TomoXJS {
                         payload: {
                             baseToken: baseToken,
                             quoteToken: quoteToken
+                        }
+                    }
+                }))
+                resolve(ws)
+            })
+        })
+    }
+    watchOHLCV({ baseToken, quoteToken, units, duration }) {
+        console.log(baseToken, quoteToken, units, duration)
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerWsUri)
+            const ws = new WebSocket(url)
+            ws.on('close', () => { 
+                resolve()
+            })
+            ws.on('error', (e) => { 
+                console.log("aaaa", e)
+                resolve()
+            })
+            ws.on('open', function connection() {
+                ws.send(JSON.stringify({
+                    channel: 'ohlcv',
+                    event: {
+                        type: 'SUBSCRIBE',
+                        payload: {
+                            baseToken: baseToken,
+                            quoteToken: quoteToken,
+                            from: 1583462574,
+                            to: 1583894574,
+                            units: units,
+                            duration: duration
                         }
                     }
                 }))
@@ -1260,7 +1291,7 @@ class TomoXJS {
 
     watchLendingOhlcv({ term, lendingToken, units, duration }) {
         return new Promise((resolve, reject) => {
-            let url = urljoin(this.relayerWsUri, 'socket')
+            let url = urljoin(this.relayerWsUri)
             const ws = new WebSocket(url)
             ws.on('close', () => { 
                 resolve()

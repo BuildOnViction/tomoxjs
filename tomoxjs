@@ -157,9 +157,9 @@ commander
     .command('ohlcv')
     .requiredOption('-b, --baseToken <baseToken>', 'base token')
     .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
-    .requiredOption('-i, --timeInternal <timeInterval>', 'time interval, candle size. Valid values: 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 1w, 1mo (1 month)')
+    .requiredOption('-i, --timeInterval <timeInterval>', 'time interval, candle size. Valid values: 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 1w, 1mo (1 month)')
     .action(async (params) => {
-        await tomox.getOrderBook(params).then(data => {
+        await tomox.getOHLCV(params).then(data => {
             console.log(data)
         }).catch(e => console.log(e))
     })
@@ -178,6 +178,20 @@ commander
     .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
     .action(async (params) => {
         await tomox.watchOrderBook(params).then(ws=> {
+            ws.on('message', (message) => {
+                console.log('%s', message)
+            })
+        }).catch(e => console.log(e))
+    })
+
+commander
+    .command('ws-ohlcv')
+    .requiredOption('-b, --baseToken <baseToken>', 'base token')
+    .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
+    .requiredOption('-u, --units <units>', 'min')
+    .requiredOption('-d, --duration <duration>', '1')
+    .action(async (params) => {
+        await tomox.watchOHLCV(params).then(ws=> {
             ws.on('message', (message) => {
                 console.log('%s', message)
             })
