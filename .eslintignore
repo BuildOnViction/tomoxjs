@@ -1,4 +1,5 @@
 tmp/**
 build/**
 node_modules/**
+contracts/**
 coverage

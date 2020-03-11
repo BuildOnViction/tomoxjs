@@ -1,17 +1,15 @@
 {
     "parserOptions": {
-        "ecmaVersion": 2017
+        "ecmaVersion": 2017,
+        "sourceType": "module"
     },
-    "extends": [],
-    "plugins": [
-        "promise"
-    ],
+    "extends": [ ],
+    "plugins": [ ],
     "rules": {
         "key-spacing"          : 0,
         "jsx-quotes"           : [2, "prefer-single"],
-        "max-len"              : [2, 750, 2],
+        "max-len"              : [2, 150, 2],
         "object-curly-spacing" : [2, "always"],
-        "promise/catch-or-return": "warn",
         "indent": ["warn", 4]
     }
 }
