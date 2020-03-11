@@ -752,6 +752,36 @@ class TomoXJS {
     // lending function
     getCreatedLendingHash(order) {
         if (order.type === 'MO') {
+            if (order.side === 'BORROW') {
+                return ethers.utils.solidityKeccak256(
+                    [
+                        'bytes',
+                        'bytes',
+                        'bytes',
+                        'bytes',
+                        'uint256',
+                        'uint256',
+                        'string',
+                        'string',
+                        'string',
+                        'uint256',
+                        'uint256'
+                    ],
+                    [
+                        order.relayerAddress,
+                        order.userAddress,
+                        order.collateralToken,
+                        order.lendingToken,
+                        order.quantity,
+                        order.term,
+                        order.side,
+                        order.status,
+                        order.type,
+                        order.nonce,
+                        order.autoTopUp
+                    ],
+                )
+            }
             return ethers.utils.solidityKeccak256(
                 [
                     'bytes',
@@ -776,6 +806,38 @@ class TomoXJS {
                     order.status,
                     order.type,
                     order.nonce
+                ],
+            )
+        }
+        if (order.side === 'BORROW') {
+            return ethers.utils.solidityKeccak256(
+                [
+                    'bytes',
+                    'bytes',
+                    'bytes',
+                    'bytes',
+                    'uint256',
+                    'uint256',
+                    'uint256',
+                    'string',
+                    'string',
+                    'string',
+                    'uint256',
+                    'uint256'
+                ],
+                [
+                    order.relayerAddress,
+                    order.userAddress,
+                    order.collateralToken,
+                    order.lendingToken,
+                    order.quantity,
+                    order.term,
+                    order.interest,
+                    order.side,
+                    order.status,
+                    order.type,
+                    order.nonce,
+                    order.autoTopUp
                 ],
             )
         }
@@ -951,9 +1013,10 @@ class TomoXJS {
                     lendingToken: order.lendingToken,
                     term: order.term,
                     interest: interest,
-                    side: order.side || 'BUY',
+                    side: order.side || 'BORROW',
                     type: order.type || 'LO',
-                    status: 'NEW'
+                    status: 'NEW',
+                    autoTopUp: order.autoTopUp || '1'
                 }
 
                 let collateralToken = await this.getTokenInfo(order.collateralToken)
@@ -1149,7 +1212,7 @@ class TomoXJS {
         const _self = this;
         return new Promise(async(resolve, reject) => {
 
-            _self._getOrder(order).then((order) => {
+            _self._getLendingOrder(order).then((order) => {
                 let url = urljoin(_self.relayerWsUri)
                 const ws = new WebSocket(url)
                 ws.on('close', () => { 
@@ -1171,8 +1234,7 @@ class TomoXJS {
         })
     }
 
-    async _getOrder(order) {
-        
+    async _getLendingOrder(order) {
         
         let nonce = order.nonce || await this.getLendingNonce()
         let o = {
@@ -1184,7 +1246,8 @@ class TomoXJS {
             interest: order.interest,
             side: order.side || 'BUY',
             type: order.type || 'LO',
-            status: 'NEW'
+            status: 'NEW',
+            autoTopUp: order.autoTopUp || '1'
         }
 
         let collateralToken = await this.getTokenInfo(order.collateralToken)

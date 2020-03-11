@@ -271,6 +271,7 @@ commander
     .option('-t, --type <type>', 'type', 'LO')
     .option('-r, --relayerAddress <relayerAddress>', 'relayerAddress', "0x0000000000000000000000000000000000000001")
     .option('-n, --nonce <nonce>')
+    .option('-u, --autoTopUp <autoTopUp>', '1')
     .action(async (params) => {
         await tomox.createLending({
             collateralToken: params.collateralToken,
@@ -282,6 +283,7 @@ commander
             side: params.side,
             type: params.type,
             nonce: params.nonce,
+            autoTopUp: params.autoTopUp,
         }).then(data => {
             console.log(data)
         }).catch(e => console.log(e))
