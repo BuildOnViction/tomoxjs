@@ -92,9 +92,12 @@ commander
     })
 
 function collect(value, previous) {
-      return previous.concat([value]);
+    return previous.concat([value]);
 }
 
+function parseDuration(value, previous) {
+    return parseInt(value)
+}
 
 commander
     .command('cancel')
@@ -189,7 +192,7 @@ commander
     .requiredOption('-b, --baseToken <baseToken>', 'base token')
     .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
     .requiredOption('-u, --units <units>', 'min')
-    .requiredOption('-d, --duration <duration>', '1')
+    .requiredOption('-d, --duration <duration>', '1', parseDuration)
     .action(async (params) => {
         await tomox.watchOHLCV(params).then(ws=> {
             ws.on('message', (message) => {
@@ -418,7 +421,7 @@ commander
     .requiredOption('-t, --term <term>', '30')
     .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
     .requiredOption('-u, --units <units>', 'min')
-    .requiredOption('-d, --duration <duration>', '1')
+    .requiredOption('-d, --duration <duration>', '1', parseDuration)
     .action(async (params) => {
         await tomox.watchLendingOhlcv(params).then(ws=> {
             ws.on('message', (message) => {

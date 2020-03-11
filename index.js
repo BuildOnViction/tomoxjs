@@ -83,7 +83,6 @@ class TomoXJS {
         })
     }
     watchOHLCV({ baseToken, quoteToken, units, duration }) {
-        console.log(baseToken, quoteToken, units, duration)
         return new Promise((resolve, reject) => {
             let url = urljoin(this.relayerWsUri)
             const ws = new WebSocket(url)
@@ -102,8 +101,6 @@ class TomoXJS {
                         payload: {
                             baseToken: baseToken,
                             quoteToken: quoteToken,
-                            from: 1583462574,
-                            to: 1583894574,
                             units: units,
                             duration: duration
                         }
