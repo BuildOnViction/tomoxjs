@@ -99,6 +99,10 @@ function parseDuration(value, previous) {
     return parseInt(value)
 }
 
+function parseTerm(value, previous) {
+    return parseInt(value)
+}
+
 commander
     .command('cancel')
     .requiredOption('-s, --hash <hash>', 'hash', collect, [])
@@ -395,7 +399,7 @@ commander
 
 commander
     .command('ws-lending-orderbook')
-    .requiredOption('-t, --term <term>', '60')
+    .requiredOption('-t, --term <term>', '60', parseTerm)
     .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
     .action(async (params) => {
         await tomox.watchLendingOrderBook(params).then(ws=> {
@@ -407,7 +411,7 @@ commander
 
 commander
     .command('ws-lending-trade')
-    .requiredOption('-t, --term <term>', '60')
+    .requiredOption('-t, --term <term>', '60', parseTerm)
     .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
     .action(async (params) => {
         await tomox.watchLendingTrade(params).then(ws=> {
@@ -420,7 +424,7 @@ commander
 
 commander
     .command('ws-lending-ohlcv')
-    .requiredOption('-t, --term <term>', '30')
+    .requiredOption('-t, --term <term>', '30', parseTerm)
     .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
     .requiredOption('-u, --units <units>', 'min')
     .requiredOption('-d, --duration <duration>', '1', parseDuration)
