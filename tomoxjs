@@ -269,7 +269,7 @@ commander
     .option('-e, --term <term>', 'term', '86400')
     .option('-s, --side <side>', 'side', 'INVEST')
     .option('-t, --type <type>', 'type', 'LO')
-    .option('-r, --relayerAddress <relayerAddress>', 'relayerAddress', "0x0000000000000000000000000000000000000001")
+    .option('-r, --relayerAddress <relayerAddress>', 'relayerAddress')
     .option('-n, --nonce <nonce>')
     .option('-u, --autoTopUp <autoTopUp>', '1')
     .action(async (params) => {
@@ -298,7 +298,7 @@ commander
     .option('-e, --term <term>', 'term', '86400')
     .option('-s, --side <side>', 'side', 'INVEST')
     .option('-t, --type <type>', 'type', 'LO')
-    .option('-r, --relayerAddress <relayerAddress>', 'relayerAddress', "0x0000000000000000000000000000000000000001")
+    .option('-r, --relayerAddress <relayerAddress>', 'relayerAddress')
     .option('-n, --nonce <nonce>')
     .action(async (params) => {
 
