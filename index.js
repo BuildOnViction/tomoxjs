@@ -1373,8 +1373,107 @@ class TomoXJS {
             })
         })
     }
+    getLendingPairs() {
+        return new Promise((resolve, reject) => {
 
+            let url = urljoin(this.relayerUri, '/api/lending/pairs')
+            let options = {
+                method: 'GET',
+                url: url,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
 
+                try {
+                    let pairs = (body || {}).data
+                    return resolve(pairs)
+                } catch (e) {
+                    return reject(Error('Can not get lending pairs, check relayer uri again'))
+                }
+            })
+        })
+    }
+    getLendingMarkets() {
+        return new Promise((resolve, reject) => {
+
+            let url = urljoin(this.relayerUri, '/api/lending/market/stats/all')
+            let options = {
+                method: 'GET',
+                url: url,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+
+                try {
+                    let pairs = (body || {}).data
+                    return resolve(pairs)
+                } catch (e) {
+                    return reject(Error('Can not get lending pairs, check relayer uri again'))
+                }
+            })
+        })
+    }
+    getLendingMarket(params) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerUri, '/api/lending/market/stats')
+            let data = {
+                term: params.term,
+                lendingToken: params.lendingToken
+            }
+
+            let options = {
+                method: 'GET',
+                url: url,
+                json: true,
+                qs: data,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+
+                try {
+                    let order = (body || {}).data
+                    return resolve(order)
+                } catch (e) {
+                    return reject(Error('Can not get order, check relayer uri again'))
+                }
+            })
+        })
+    }
+    watchLendingMarkets() {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerWsUri)
+            const ws = new WebSocket(url)
+            ws.on('close', () => { 
+                resolve()
+            })
+            ws.on('open', function connection() {
+                ws.send(JSON.stringify({
+                    channel: 'lending_markets',
+                    event: {
+                        type: 'SUBSCRIBE'
+                    }
+                }))
+                resolve(ws)
+            })
+        })
+    }
 }
 
 module.exports = TomoXJS
