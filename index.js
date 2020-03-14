@@ -1474,6 +1474,57 @@ class TomoXJS {
             })
         })
     }
+
+    getCollateralTokens() {
+        return new Promise((resolve, reject) => {
+
+            let url = urljoin(this.relayerUri, '/api/lending/collateraltoken')
+            let options = {
+                method: 'GET',
+                url: url,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+                try {
+                    let pairs = (body || {}).data
+                    return resolve(pairs)
+                } catch (e) {
+                    return reject(Error('Can not get collateral token, check relayer uri again'))
+                }
+            })
+        })
+    }
+    getLendingTokens() {
+        return new Promise((resolve, reject) => {
+
+            let url = urljoin(this.relayerUri, '/api/lending/lendingtoken')
+            let options = {
+                method: 'GET',
+                url: url,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+                try {
+                    let pairs = (body || {}).data
+                    return resolve(pairs)
+                } catch (e) {
+                    return reject(Error('Can not get lending token, check relayer uri again'))
+                }
+            })
+        })
+    }
 }
 
 module.exports = TomoXJS

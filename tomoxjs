@@ -470,5 +470,19 @@ commander
         }).catch(e => console.log(e))
     })
 
+commander
+    .command('lending-tokens')
+    .action(async () => {
+        await tomox.getLendingTokens().then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
+commander
+    .command('collateral-tokens')
+    .action(async () => {
+        await tomox.getCollateralTokens().then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
 
 commander.parse(process.argv)
