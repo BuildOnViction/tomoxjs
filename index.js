@@ -8,8 +8,8 @@ const WebSocket = require('ws')
 class TomoXJS {
     constructor (
         relayerUri = 'https://dex.tomochain.com',
-        relayerWsUri = 'wss://dex.tomochain.com',
-        pkey = '0xb377a94c7f88c55e4bc83560659ca4cbf6bd17e2d6ab2d32663d9d09ec9766f7' // sample
+        relayerWsUri = 'wss://dex.tomochain.com/socket',
+        pkey = '' // sample
     ) {
         this.relayerUri = relayerUri
         this.relayerWsUri = relayerWsUri

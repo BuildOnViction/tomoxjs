@@ -7,6 +7,7 @@ const { prompt } = require('inquirer')
 const fs = require('fs')
 const path = require('path')
 const os = require('os')
+const ethers = require('ethers')
 
 let configPath = path.resolve(process.cwd(), '.env')
 if (fs.existsSync(path.resolve(require('os').homedir(), '.tomoxjs'))) {
@@ -15,7 +16,7 @@ if (fs.existsSync(path.resolve(require('os').homedir(), '.tomoxjs'))) {
 
 require('dotenv').config({ path: configPath })
 
-if ((process.argv.indexOf('--help') < 0) && (process.argv.indexOf('setup') < 0)
+if ((process.argv.indexOf('--help') < 0) && (process.argv.indexOf('init') < 0)
     && (process.argv.indexOf('config') < 0)) {
     if (!process.env.DEX_URI || !process.env.TRADER_PKEY) {
         console.log('DEX_URI, TRADER_PKEY env are require, please create .env file')
@@ -33,24 +34,36 @@ commander
     .description('TomoX Market CLI')
 
 commander
-    .command('setup')
+    .command('init')
     .action(async (params) => {
         const questions = [{
             type : 'password',
             name : 'traderPKey',
-            message : 'Enter trader private key (0x)...'
+            message : 'Enter trader private key (default: Random)...'
         }, {
             type : 'input',
             name : 'dexUri',
-            message : 'Enter DEX Uri (https://dex.tomochain.com)...'
+            message : 'Enter DEX Uri (default: https://dex.tomochain.com)...',
+            default: 'https://dex.tomochain.com'
+
         }, {
             type : 'input',
             name : 'dexWsUri',
-            message : 'Enter DEX WebSocket Uri (wss://dex.tomochain.com)...'
+            message : 'Enter DEX WebSocket Uri (default: wss://dex.tomochain.com/socket)...',
+            default: 'wss://dex.tomochain.com/socket'
         }]
         prompt(questions).then( answers => {
             let tomoxjsPath = path.resolve(require('os').homedir(), '.tomoxjs')
-            fs.writeFile(tomoxjsPath, `DEX_URI=${answers.dexUri}\nDEX_WS_URI=${answers.dexWsUri}\nTRADER_PKEY=${answers.traderPKey}\n`, function (err) {
+            let address = ''
+            if (!answers.traderPKey) {
+                let randomWallet = ethers.Wallet.createRandom()
+                answers.traderPKey = randomWallet.privateKey
+                address = randomWallet.address
+            } else {
+                let wallet = new ethers.Wallet(answers.traderPKey)
+                address = wallet.address
+            }
+            fs.writeFile(tomoxjsPath, `DEX_URI=${answers.dexUri}\nDEX_WS_URI=${answers.dexWsUri}\nTRADER_PKEY=${answers.traderPKey}\nTRADER_ADDR=${address}`, function (err) {
                 if (err) throw err;
                 console.log('Saved!');
             });
@@ -64,6 +77,7 @@ commander
         configPath: ${configPath}
         DEX_URI: ${process.env.DEX_URI}
         DEX_WS_URI: ${process.env.DEX_WS_URI}
+        TRADER_ADDR: ${process.env.TRADER_ADDR}
         TRADER_PKEY: ******
         `)
     })
