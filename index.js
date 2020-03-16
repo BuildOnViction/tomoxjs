@@ -13,6 +13,10 @@ class TomoXJS {
     ) {
         this.relayerUri = relayerUri
         this.relayerWsUri = relayerWsUri
+        if (!pkey) {
+            let randomWallet = ethers.Wallet.createRandom()
+            pkey = randomWallet.privateKey
+        }
         this.wallet = new ethers.Wallet(pkey)
         this.coinbase = this.wallet.address
     }

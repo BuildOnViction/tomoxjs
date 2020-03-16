@@ -107,8 +107,12 @@ tomox.getAccount(address)
 ```
 
 ## Command Line
-You need to create `.env` file to setup `DEX_URI` and `TRADER_PKEY` before using the tool.
+You need to init env or create `.env` file to setup `DEX_URI` and `TRADER_PKEY` before using the tool.
 
+```
+tomoxjs init
+```
+Or
 ```
 cp .env.example .env
 ```
