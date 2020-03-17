@@ -399,7 +399,7 @@ commander
 commander
     .command('lending-topup')
     .description('topup a loan')
-    .requiredOption('-r, --relayerAddress <relayerAddress>')
+    .option('-r, --relayerAddress <relayerAddress>')
     .requiredOption('-l, --lendingToken <lendingToken>')
     .requiredOption('-t, --term <term>')
     .requiredOption('-c, --collateralToken <collateralToken>')

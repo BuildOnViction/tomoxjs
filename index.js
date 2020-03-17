@@ -929,7 +929,6 @@ class TomoXJS {
                 'bytes',
                 'uint256',
                 'uint256',
-                'bytes',
                 'uint256'
             ],
             [
@@ -940,7 +939,6 @@ class TomoXJS {
                 order.lendingToken,
                 order.term,
                 order.tradeId,
-                order.collateralToken,
                 order.quantity
             ],
         )
@@ -1159,58 +1157,57 @@ class TomoXJS {
     }
     topupLending(order) {
         return new Promise(async (resolve, reject) => {
-            // try {
-            let relayer = await this.getRelayerInfo()
-            let url = urljoin(this.relayerUri, '/api/lending/topup')
-            let nonce = order.nonce || await this.getLendingNonce()
-            let o = {
-                userAddress: this.coinbase,
-                relayerAddress: order.relayerAddress || relayer.relayerAddress,
-                lendingToken: order.lendingToken,
-                term: order.term,
-                collateralToken: order.collateralToken,
-                quantity: order.quantity,
-                tradeId: order.tradeId,
-                status: 'TOPUP'
-            }
-            let collateralToken = await this.getTokenInfo(order.collateralToken)
-               
-            if (!collateralToken) {
-                return reject(Error('Can not get token info'))
-            }
-
-            o.quantity = new BigNumber(order.quantity)
-                .multipliedBy(10 ** collateralToken.decimals).toString(10)
-            o.nonce = String(nonce)
-            o.hash = this.getTopupLendingHash(o)
-            let signature = await this.wallet.signMessage(ethers.utils.arrayify(o.hash))
-            let { r, s, v } = ethers.utils.splitSignature(signature)
-
-            o.signature = { R: r, S: s, V: v }
-
-            let options = {
-                method: 'POST',
-                url: url,
-                json: true,
-                headers: {
-                    'content-type': 'application/json'
-                },
-                body: o
-            }
-            request(options, (error, response, body) => {
-                if (error) {
-                    return reject(error)
+            try {
+                let relayer = await this.getRelayerInfo()
+                let url = urljoin(this.relayerUri, '/api/lending/topup')
+                let nonce = order.nonce || await this.getLendingNonce()
+                let o = {
+                    userAddress: this.coinbase,
+                    relayerAddress: order.relayerAddress || relayer.exchangeAddress,
+                    lendingToken: order.lendingToken,
+                    term: order.term,
+                    quantity: order.quantity,
+                    tradeId: order.tradeId,
+                    status: 'TOPUP'
                 }
-                if (response.statusCode !== 200 && response.statusCode !== 201) {
-                    return reject(body)
+                let collateralToken = await this.getTokenInfo(order.collateralToken)
+
+                if (!collateralToken) {
+                    return reject(Error('Can not get token info'))
                 }
 
-                return resolve(o)
+                o.quantity = new BigNumber(order.quantity)
+                    .multipliedBy(10 ** collateralToken.decimals).toString(10)
+                o.nonce = String(nonce)
+                o.hash = this.getTopupLendingHash(o)
+                let signature = await this.wallet.signMessage(ethers.utils.arrayify(o.hash))
+                let { r, s, v } = ethers.utils.splitSignature(signature)
 
-            })
-            // } catch(e) {
-            //     return reject(e)
-            // }
+                o.signature = { R: r, S: s, V: v }
+
+                let options = {
+                    method: 'POST',
+                    url: url,
+                    json: true,
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: o
+                }
+                request(options, (error, response, body) => {
+                    if (error) {
+                        return reject(error)
+                    }
+                    if (response.statusCode !== 200 && response.statusCode !== 201) {
+                        return reject(body)
+                    }
+
+                    return resolve(o)
+
+                })
+            } catch(e) {
+                return reject(e)
+            }
         })
     }
     createWsLending(order) {
