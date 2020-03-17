@@ -35,6 +35,7 @@ commander
 
 commander
     .command('init')
+    .description('setup/init enviroment')
     .option('-p, --password <password>', 'password', '')
     .option('-k, --keystore <keystore>', 'path to keystore file', '')
     .action(async (params) => {
@@ -92,6 +93,7 @@ commander
 
 commander
     .command('config')
+    .description('show environment information')
     .action(() => {
         console.log(`
         configPath: ${configPath}
@@ -104,6 +106,7 @@ commander
 
 commander
     .command('create')
+    .description('create a trading order')
     .option('-b, --baseToken <baseToken>', 'base token', '0xBD8b2Fb871F97b2d5F0A1af3bF73619b09174B2A')
     .option('-q, --quoteToken <quoteToken>', 'quote token', '0x0000000000000000000000000000000000000001')
     .option('-p, --price <price>', 'price', '21207')
@@ -139,6 +142,7 @@ function parseTerm(value, previous) {
 
 commander
     .command('cancel')
+    .description('cancel a trading order')
     .requiredOption('-s, --hash <hash>', 'hash', collect, [])
     .option('-n, --nonce <nonce>', 'nonce', 0)
     .action(async (params) => {
@@ -156,6 +160,7 @@ commander
 
 commander
     .command('pairs')
+    .description('show trading pairs')
     .action(async () => {
         await tomox.getPairs().then(data => {
             console.log(data)
@@ -164,6 +169,7 @@ commander
 
 commander
     .command('o-list')
+    .description('show user orders')
     .alias('list')
     .option('-b, --baseToken <baseToken>', 'base token')
     .option('-q, --quoteToken <quoteToken>', 'quote token')
@@ -176,6 +182,7 @@ commander
 
 commander
     .command('o-get')
+    .description('show order by hash')
     .alias('get')
     .requiredOption('-s, --hash <hash>', 'order hash')
     .action(async (params) => {
@@ -186,6 +193,7 @@ commander
 
 commander
     .command('orderbook')
+    .description('show trading orderbook')
     .requiredOption('-b, --baseToken <baseToken>', 'base token')
     .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
     .action(async (params) => {
@@ -196,6 +204,7 @@ commander
 
 commander
     .command('ohlcv')
+    .description('show trading OHLCV data')
     .requiredOption('-b, --baseToken <baseToken>', 'base token')
     .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
     .requiredOption('-i, --timeInterval <timeInterval>', 'time interval, candle size. Valid values: 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 1w, 1mo (1 month)')
@@ -207,6 +216,7 @@ commander
 
 commander
     .command('info')
+    .description('show DEX information')
     .action(async () => {
         await tomox.getRelayerInfo().then(data => {
             console.log(data)
@@ -215,6 +225,7 @@ commander
 
 commander
     .command('ws-orderbook')
+    .description('watch trading orderbook')
     .requiredOption('-b, --baseToken <baseToken>', 'base token')
     .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
     .action(async (params) => {
@@ -227,6 +238,7 @@ commander
 
 commander
     .command('ws-ohlcv')
+    .description('watch trading OHLCV data')
     .requiredOption('-b, --baseToken <baseToken>', 'base token')
     .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
     .requiredOption('-u, --units <units>', 'min')
@@ -241,6 +253,7 @@ commander
 
 commander
     .command('ws-trades')
+    .description('watch trades')
     .requiredOption('-b, --baseToken <baseToken>', 'base token')
     .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
     .action(async (params) => {
@@ -253,6 +266,7 @@ commander
 
 commander
     .command('ws-price-board')
+    .description('watch price board')
     .alias('price-board')
     .requiredOption('-b, --baseToken <baseToken>', 'base token')
     .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
@@ -266,6 +280,7 @@ commander
 
 commander
     .command('ws-markets')
+    .description('watch trading market')
     .alias('markets')
     .action(async () => {
         await tomox.watchMarkets().then(ws => {
@@ -281,6 +296,7 @@ commander
  
   commander
     .command('lending-hash')
+    .description('show lending order by hash')
     .alias('get')
     .requiredOption('-h , --hash <hash>', 'lending hash')
     .action(async (params) => {
@@ -292,6 +308,7 @@ commander
 
   commander
     .command('lending-nonce')
+    .description('show lending user nonce')
     .action(async () => {
         await tomox.getLendingNonce().then(data => {
             console.log(data)
@@ -300,6 +317,7 @@ commander
 
 commander
     .command('lending-create')
+    .description('create a lendig order')
     .option('-c, --collateralToken <collateralToken>', 'collateral token', '0xBD8b2Fb871F97b2d5F0A1af3bF73619b09174B2A')
     .option('-l, --lendingToken <lendingToken>', 'lending token', '0x0000000000000000000000000000000000000001')
     .option('-q, --quantity <quantity>', 'quantity', '2')
@@ -329,6 +347,7 @@ commander
 
 commander
     .command('lending-create-ws')
+    .description('create a lendig order via websocket')
     .option('-c, --collateralToken <collateralToken>', 'collateral token', '0xBD8b2Fb871F97b2d5F0A1af3bF73619b09174B2A')
     .option('-l, --lendingToken <lendingToken>', 'lending token', '0x0000000000000000000000000000000000000001')
     .option('-q, --quantity <quantity>', 'quantity', '2')
@@ -359,6 +378,7 @@ commander
 
 commander
     .command('lending-repay')
+    .description('repay a loan')
     .requiredOption('-r, --relayerAddress <relayerAddress>')
     .requiredOption('-l, --lendingToken <lendingToken>')
     .requiredOption('-t, --term <term>')
@@ -378,6 +398,7 @@ commander
 
 commander
     .command('lending-topup')
+    .description('topup a loan')
     .requiredOption('-r, --relayerAddress <relayerAddress>')
     .requiredOption('-l, --lendingToken <lendingToken>')
     .requiredOption('-t, --term <term>')
@@ -401,6 +422,7 @@ commander
 
 commander
     .command('lending-cancel')
+    .description('cancel a lending order')
     .requiredOption('-r, --relayerAddress <relayerAddress>')
     .requiredOption('-l, --lendingToken <lendingToken>')
     .requiredOption('-t, --term <term>')
@@ -423,6 +445,7 @@ commander
 
 commander
     .command('lending-orderbook')
+    .description('show lending orderbook')
     .requiredOption('-t, --term <term>', '60')
     .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
     .action(async (params) => {
@@ -433,6 +456,7 @@ commander
 
 commander
     .command('ws-lending-orderbook')
+    .description('watch lending orderbook')
     .requiredOption('-t, --term <term>', '60', parseTerm)
     .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
     .action(async (params) => {
@@ -445,6 +469,7 @@ commander
 
 commander
     .command('ws-lending-trade')
+    .description('watch lending trades')
     .requiredOption('-t, --term <term>', '60', parseTerm)
     .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
     .action(async (params) => {
@@ -458,6 +483,7 @@ commander
 
 commander
     .command('ws-lending-ohlcv')
+    .description('watch lending OHLCV data')
     .requiredOption('-t, --term <term>', '30', parseTerm)
     .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
     .requiredOption('-u, --units <units>', 'min')
@@ -471,6 +497,7 @@ commander
     })
 commander
     .command('lending-pairs')
+    .description('show lending pairs')
     .action(async () => {
         await tomox.getLendingPairs().then(data => {
             console.log(data)
@@ -479,6 +506,7 @@ commander
 
 commander
     .command('lending-markets')
+    .description('show all lending markets')
     .action(async () => {
         await tomox.getLendingMarkets().then(data => {
             console.log(data)
@@ -486,6 +514,7 @@ commander
     })
 commander
     .command('lending-market')
+    .description('show lending market by pairs')
     .requiredOption('-t, --term <term>', '86400')
     .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
     .action(async (params) => {
@@ -495,6 +524,7 @@ commander
     })
 commander
     .command('ws-lending-markets')
+    .description('watch all lending markets')
     .alias('lending-markets')
     .action(async () => {
         await tomox.watchLendingMarkets().then(ws => {
@@ -506,6 +536,7 @@ commander
 
 commander
     .command('lending-tokens')
+    .description('show lending tokens')
     .action(async () => {
         await tomox.getLendingTokens().then(data => {
             console.log(data)
@@ -513,6 +544,7 @@ commander
     })
 commander
     .command('collateral-tokens')
+    .description('show lending collateral tokens')
     .action(async () => {
         await tomox.getCollateralTokens().then(data => {
             console.log(data)
