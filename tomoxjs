@@ -379,7 +379,7 @@ commander
 commander
     .command('lending-repay')
     .description('repay a loan')
-    .requiredOption('-r, --relayerAddress <relayerAddress>')
+    .option('-r, --relayerAddress <relayerAddress>')
     .requiredOption('-l, --lendingToken <lendingToken>')
     .requiredOption('-t, --term <term>')
     .requiredOption('-i, --tradeId <tradeId>')
