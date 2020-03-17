@@ -119,7 +119,6 @@ cp .env.example .env
 
 Help:
 ```bash
-./tomoxjs --help
 Usage: tomoxjs [options] [command]
 
 TomoX Market CLI
@@ -129,38 +128,38 @@ Options:
   -h, --help                            output usage information
 
 Commands:
-  init [options]
-  config
-  create [options]
-  cancel [options]
-  pairs
-  o-list|list [options]
-  o-get|get [options]
-  orderbook [options]
-  ohlcv [options]
-  info
-  ws-orderbook [options]
-  ws-ohlcv [options]
-  ws-trades [options]
-  ws-price-board|price-board [options]
-  ws-markets|markets
-  lending-hash|get [options]
-  lending-nonce
-  lending-create [options]
-  lending-create-ws [options]
-  lending-repay [options]
-  lending-topup [options]
-  lending-cancel [options]
-  lending-orderbook [options]
-  ws-lending-orderbook [options]
-  ws-lending-trade [options]
-  ws-lending-ohlcv [options]
-  lending-pairs
-  lending-markets
-  lending-market [options]
-  ws-lending-markets|lending-markets
-  lending-tokens
-  collateral-tokens
+  init [options]                        setup/init enviroment
+  config                                show environment information
+  create [options]                      create a trading order
+  cancel [options]                      cancel a trading order
+  pairs                                 show trading pairs
+  o-list|list [options]                 show user orders
+  o-get|get [options]                   show order by hash
+  orderbook [options]                   show trading orderbook
+  ohlcv [options]                       show trading OHLCV data
+  info                                  show DEX information
+  ws-orderbook [options]                watch trading orderbook
+  ws-ohlcv [options]                    watch trading OHLCV data
+  ws-trades [options]                   watch trades
+  ws-price-board|price-board [options]  watch price board
+  ws-markets|markets                    watch trading market
+  lending-hash|get [options]            show lending order by hash
+  lending-nonce                         show lending user nonce
+  lending-create [options]              create a lendig order
+  lending-create-ws [options]           create a lendig order via websocket
+  lending-repay [options]               repay a loan
+  lending-topup [options]               topup a loan
+  lending-cancel [options]              cancel a lending order
+  lending-orderbook [options]           show lending orderbook
+  ws-lending-orderbook [options]        watch lending orderbook
+  ws-lending-trade [options]            watch lending trades
+  ws-lending-ohlcv [options]            watch lending OHLCV data
+  lending-pairs                         show lending pairs
+  lending-markets                       show all lending markets
+  lending-market [options]              show lending market by pairs
+  ws-lending-markets|lending-markets    watch all lending markets
+  lending-tokens                        show lending tokens
+  collateral-tokens                     show lending collateral tokens
 ```
 
 ### Create Order CLI
