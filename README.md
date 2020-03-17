@@ -128,7 +128,7 @@ Options:
   -h, --help                            output usage information
 
 Commands:
-  init [options]                        setup/init enviroment
+  init [options]                        setup/init environment
   config                                show environment information
   create [options]                      create a trading order
   cancel [options]                      cancel a trading order

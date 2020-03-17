@@ -35,7 +35,7 @@ commander
 
 commander
     .command('init')
-    .description('setup/init enviroment')
+    .description('setup/init environment')
     .option('-p, --password <password>', 'password', '')
     .option('-k, --keystore <keystore>', 'path to keystore file', '')
     .action(async (params) => {
