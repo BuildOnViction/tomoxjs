@@ -35,12 +35,10 @@ commander
 
 commander
     .command('init')
+    .option('-p, --password <password>', 'password', '')
+    .option('-k, --keystore <keystore>', 'path to keystore file', '')
     .action(async (params) => {
         const questions = [{
-            type : 'password',
-            name : 'traderPKey',
-            message : 'Enter trader private key (default: Random)...'
-        }, {
             type : 'input',
             name : 'dexUri',
             message : 'Enter DEX Uri (default: https://dex.tomochain.com)...',
@@ -52,21 +50,43 @@ commander
             message : 'Enter DEX WebSocket Uri (default: wss://dex.tomochain.com/socket)...',
             default: 'wss://dex.tomochain.com/socket'
         }]
-        prompt(questions).then( answers => {
-            let tomoxjsPath = path.resolve(require('os').homedir(), '.tomoxjs')
-            let address = ''
-            if (!answers.traderPKey) {
-                let randomWallet = ethers.Wallet.createRandom()
-                answers.traderPKey = randomWallet.privateKey
-                address = randomWallet.address
-            } else {
-                let wallet = new ethers.Wallet(answers.traderPKey)
-                address = wallet.address
+        if (!params.keystore) {
+            questions.push({
+                type : 'password',
+                name : 'traderPKey',
+                message : 'Enter trader private key (default: Random)...'
+            })
+        }
+        prompt(questions).then(async answers => {
+            try {
+                let tomoxjsPath = path.resolve(require('os').homedir(), '.tomoxjs')
+                let address = ''
+
+                if (params.keystore) {
+                    let keydata = fs.readFileSync(params.keystore);
+                    let json = JSON.parse(keydata);
+                    let wallet = await ethers.Wallet.fromEncryptedJson(JSON.stringify(json), params.password)
+                    answers.traderPKey = wallet.privateKey
+                    address = wallet.address
+                }
+
+                if (!answers.traderPKey) {
+                    let randomWallet = ethers.Wallet.createRandom()
+                    answers.traderPKey = randomWallet.privateKey
+                    address = randomWallet.address
+                } else {
+                    let wallet = new ethers.Wallet(answers.traderPKey)
+                    address = wallet.address
+                }
+
+                fs.writeFile(tomoxjsPath, `DEX_URI=${answers.dexUri}\nDEX_WS_URI=${answers.dexWsUri}\nTRADER_PKEY=${answers.traderPKey}\nTRADER_ADDR=${address}\n`, function (err) {
+                    if (err) throw err;
+                    console.log('Address:', address);
+                    console.log('Saved!');
+                })
+            } catch (e) {
+                console.log(e)
             }
-            fs.writeFile(tomoxjsPath, `DEX_URI=${answers.dexUri}\nDEX_WS_URI=${answers.dexWsUri}\nTRADER_PKEY=${answers.traderPKey}\nTRADER_ADDR=${address}`, function (err) {
-                if (err) throw err;
-                console.log('Saved!');
-            });
         })
     })
 
