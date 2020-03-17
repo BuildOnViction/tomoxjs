@@ -119,18 +119,48 @@ cp .env.example .env
 
 Help:
 ```bash
-$ ./tomoxjs --help
+./tomoxjs --help
 Usage: tomoxjs [options] [command]
 
 TomoX Market CLI
 
 Options:
-  -V, --version     output the version number
-  -h, --help        output usage information
+  -V, --version                         output the version number
+  -h, --help                            output usage information
 
 Commands:
+  init [options]
+  config
   create [options]
-  cancel <hash>
+  cancel [options]
+  pairs
+  o-list|list [options]
+  o-get|get [options]
+  orderbook [options]
+  ohlcv [options]
+  info
+  ws-orderbook [options]
+  ws-ohlcv [options]
+  ws-trades [options]
+  ws-price-board|price-board [options]
+  ws-markets|markets
+  lending-hash|get [options]
+  lending-nonce
+  lending-create [options]
+  lending-create-ws [options]
+  lending-repay [options]
+  lending-topup [options]
+  lending-cancel [options]
+  lending-orderbook [options]
+  ws-lending-orderbook [options]
+  ws-lending-trade [options]
+  ws-lending-ohlcv [options]
+  lending-pairs
+  lending-markets
+  lending-market [options]
+  ws-lending-markets|lending-markets
+  lending-tokens
+  collateral-tokens
 ```
 
 ### Create Order CLI
