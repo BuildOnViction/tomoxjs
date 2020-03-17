@@ -1013,7 +1013,6 @@ class TomoXJS {
                 let o = {
                     userAddress: this.coinbase,
                     relayerAddress: order.relayerAddress || relayer.exchangeAddress,
-                    collateralToken: order.collateralToken,
                     lendingToken: order.lendingToken,
                     term: order.term,
                     interest: interest,
@@ -1022,8 +1021,10 @@ class TomoXJS {
                     status: 'NEW',
                     autoTopUp: order.autoTopUp || '1'
                 }
+                
+                o.collateralToken = order.collateralToken
 
-                let collateralToken = await this.getTokenInfo(order.collateralToken)
+                let collateralToken = (o.side == 'BORROW') ? await this.getTokenInfo(order.collateralToken) : true
                 let lendingToken = await this.getTokenInfo(order.lendingToken)
 
                 if (!collateralToken || !lendingToken) {
@@ -1511,6 +1512,36 @@ class TomoXJS {
             let options = {
                 method: 'GET',
                 url: url,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+                try {
+                    let pairs = (body || {}).data
+                    return resolve(pairs)
+                } catch (e) {
+                    return reject(Error('Can not get lending token, check relayer uri again'))
+                }
+            })
+        })
+    }
+    getLendingTrades(params) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerUri, '/api/lending/trades/history')
+            let qs = {
+                term: params.term,
+                lendingToken: params.lendingToken,
+                address: params.address || this.coinbase
+            }
+            let options = {
+                method: 'GET',
+                url: url,
+                qs: qs,
                 json: true,
                 headers: {
                     'content-type': 'application/json'

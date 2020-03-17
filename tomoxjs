@@ -318,7 +318,7 @@ commander
 commander
     .command('lending-create')
     .description('create a lendig order')
-    .option('-c, --collateralToken <collateralToken>', 'collateral token', '0xBD8b2Fb871F97b2d5F0A1af3bF73619b09174B2A')
+    .option('-c, --collateralToken <collateralToken>', 'collateral token', '0x0000000000000000000000000000000000000000')
     .option('-l, --lendingToken <lendingToken>', 'lending token', '0x0000000000000000000000000000000000000001')
     .option('-q, --quantity <quantity>', 'quantity', '2')
     .option('-i, --interest <interest>', 'interest', '10')
@@ -550,5 +550,18 @@ commander
             console.log(data)
         }).catch(e => console.log(e))
     })
+
+commander
+    .command('lending-trades')
+    .description('show lending trades')
+    .option('-a, --address <address>', 'address')
+    .requiredOption('-t, --term <term>', 'term')
+    .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
+    .action(async (params) => {
+        await tomox.getLendingTrades(params).then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
+
 
 commander.parse(process.argv)
