@@ -346,7 +346,7 @@ commander
     })
 
 commander
-    .command('lending-create-ws')
+    .command('ws-lending-create')
     .description('create a lendig order via websocket')
     .option('-c, --collateralToken <collateralToken>', 'collateral token', '0xBD8b2Fb871F97b2d5F0A1af3bF73619b09174B2A')
     .option('-l, --lendingToken <lendingToken>', 'lending token', '0x0000000000000000000000000000000000000001')

@@ -1222,7 +1222,7 @@ class TomoXJS {
                 })
                 ws.on('open', function connection() {
                     ws.send(JSON.stringify({
-                        channel: 'lending_order',
+                        channel: 'lending_orders',
                         event: {
                             type: 'NEW_LENDING_ORDER',
                             payload: order
@@ -1248,7 +1248,7 @@ class TomoXJS {
             collateralToken: order.collateralToken,
             lendingToken: order.lendingToken,
             term: order.term,
-            interest: order.interest,
+            interest: interest,
             side: order.side || 'BORROW',
             type: order.type || 'LO',
             status: 'NEW',
@@ -1259,7 +1259,7 @@ class TomoXJS {
         let lendingToken = await this.getTokenInfo(order.lendingToken)
 
         if (!collateralToken || !lendingToken) {
-            return reject(Error('Can not get token info'))
+            throw Error('Can not get token info')
         }
 
         o.quantity = new BigNumber(order.quantity)
@@ -1271,7 +1271,6 @@ class TomoXJS {
         let { r, s, v } = ethers.utils.splitSignature(signature)
 
         o.signature = { R: r, S: s, V: v }
-        console.log(o)
         return o
     }
 
