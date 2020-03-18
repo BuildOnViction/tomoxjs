@@ -4,13 +4,13 @@ It requires NodeJS 8+.
 
 Easy to install the package with command:
 ```
-npm install --save tomoxjs
+npm install -g tomoxjs
 ```
 
 Or you can use TomoXJS binary:
 ```
-cd /tmp && wget https://github.com/tomochain/tomoxjs/releases/download/[VERSION]/tomoxjs.[VERSION].linux-x64 -O tomoxjs
-chmod +x tomoxjs && sudo mv tomoxjs /usr/local/bin/
+cd /tmp && wget https://github.com/tomochain/tomoxjs/releases/download/[VERSION]/tomox-cli.[VERSION].linux-x64 -O tomox-cli
+chmod +x tomox-cli && sudo mv tomox-cli /usr/local/bin/
 ```
 
 ## APIs
@@ -23,7 +23,7 @@ const TomoX = require('tomoxjs')
 
 
 const relayerUri = 'https://dex.tomochain.com'  // TomoChain Relayer URL
-const relayerWsUri = 'wss://dex.tomochain.com'  // TomoChain Relayer URL
+const relayerWsUri = 'wss://dex.tomochain.com/socket'  // TomoChain Relayer URL
 const pkey = '0x0' // your private key
 
 const tomox = new TomoX(relayerUri, relayerWsUri, pkey)
@@ -110,7 +110,7 @@ tomox.getAccount(address)
 You need to init env or create `.env` file to setup `DEX_URI` and `TRADER_PKEY` before using the tool.
 
 ```
-tomoxjs init
+tomox-cli init
 ```
 Or
 ```
@@ -119,7 +119,7 @@ cp .env.example .env
 
 Help:
 ```bash
-Usage: tomoxjs [options] [command]
+Usage: tomox-cli [options] [command]
 
 TomoX Market CLI
 
@@ -164,8 +164,8 @@ Commands:
 
 ### Create Order CLI
 ```bash
-$ ./tomoxjs create --help
-Usage: tomoxjs create [options]
+$ ./tomox-cli create --help
+Usage: tomox-cli create [options]
 
 Options:
   -b, --baseToken <baseToken>    base token (default: "0xBD8b2Fb871F97b2d5F0A1af3bF73619b09174B2A")
@@ -179,8 +179,8 @@ Options:
 
 ### Cancel Order CLI
 ```bash
-$ ./tomoxjs cancel --help
-Usage: tomoxjs cancel [options]
+$ ./tomox-cli cancel --help
+Usage: tomox-cli cancel [options]
 
 Options:
   -s, --hash <hash>    hash
@@ -190,8 +190,8 @@ Options:
 
 ### Get User Order List CLI
 ```bash
-$ ./tomoxjs orders -h
-Usage: tomoxjs orders [options]
+$ ./tomox-cli orders -h
+Usage: tomox-cli orders [options]
 
 Options:
   -b, --baseToken <baseToken>    base token
@@ -202,8 +202,8 @@ Options:
 
 ### Get Orderbook CLI
 ```bash
-$ ./tomoxjs orderbook -h
-Usage: tomoxjs orderbook [options]
+$ ./tomox-cli orderbook -h
+Usage: tomox-cli orderbook [options]
 
 Options:
   -b, --baseToken <baseToken>    base token
@@ -213,8 +213,8 @@ Options:
 
 ### Get OHLCV CLI
 ```bash
-$ ./tomoxjs ohlcv --help
-Usage: tomoxjs ohlcv [options]
+$ ./tomox-cli ohlcv --help
+Usage: tomox-cli ohlcv [options]
 
 Options:
   -b, --baseToken <baseToken>        base token
