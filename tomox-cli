@@ -506,26 +506,24 @@ commander
 
 commander
     .command('lending-markets')
-    .description('show all lending markets')
-    .action(async () => {
-        await tomox.getLendingMarkets().then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
-commander
-    .command('lending-market')
-    .description('show lending market by pairs')
-    .requiredOption('-t, --term <term>', '86400')
-    .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
+    .description('show lending markets')
+    .option('-t, --term <term>', 'lending term (seconds)')
+    .option('-l, --lendingToken <lendingToken>', 'lending token')
     .action(async (params) => {
-        await tomox.getLendingMarket(params).then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
+        if (params.term && params.lendingToken) {
+            await tomox.getLendingMarket(params).then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        } else {
+            await tomox.getLendingMarkets().then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        }
     })
+
 commander
     .command('ws-lending-markets')
     .description('watch all lending markets')
-    .alias('lending-markets')
     .action(async () => {
         await tomox.watchLendingMarkets().then(ws => {
             ws.on('message', (message) => {
