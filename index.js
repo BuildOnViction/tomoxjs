@@ -1060,7 +1060,7 @@ class TomoXJS {
             }
         })
     }
-    cancelLending({hash, nonce}) {
+    cancelLending({ hash, nonce }) {
         return new Promise(async (resolve, reject) => {
             try {
                 let relayer = await this.getRelayerInfo()
