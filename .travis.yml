@@ -26,18 +26,18 @@ jobs:
       before_install:
         - npm install -g nexe@3.3.2
       script:
-        - nexe -i tomoxjs -t linux-x64 -o tomoxjs.$TRAVIS_TAG.linux-x64 -r ./
-        - nexe -i tomoxjs -t darwin-x64 -o tomoxjs.$TRAVIS_TAG.darwin-x64 -r ./
-        - nexe -i tomoxjs -t win32-x64-6.11.2 -o tomoxjs.$TRAVIS_TAG.win-x64.exe -r ./
+        - nexe -i tomox-cli -t linux-x64 -o tomox-cli.$TRAVIS_TAG.linux-x64 -r ./
+        - nexe -i tomox-cli -t darwin-x64 -o tomox-cli.$TRAVIS_TAG.darwin-x64 -r ./
+        - nexe -i tomox-cli -t win32-x64-6.11.2 -o tomox-cli.$TRAVIS_TAG.win-x64.exe -r ./
       deploy:
         provider: releases
         api_key: $GH_TOKEN
         skip_cleanup: true
         overwrite: true
         file:
-          - tomoxjs.$TRAVIS_TAG.linux-x64
-          - tomoxjs.$TRAVIS_TAG.win-x64.exe
-          - tomoxjs.$TRAVIS_TAG.darwin-x64
+          - tomox-cli.$TRAVIS_TAG.linux-x64
+          - tomox-cli.$TRAVIS_TAG.win-x64.exe
+          - tomox-cli.$TRAVIS_TAG.darwin-x64
         on:
           tags: true
 
