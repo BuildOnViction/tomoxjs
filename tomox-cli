@@ -142,9 +142,9 @@ function parseTerm(value, previous) {
 
 commander
     .command('cancel')
-    .description('cancel a trading order')
-    .requiredOption('-s, --hash <hash>', 'hash', collect, [])
-    .option('-n, --nonce <nonce>', 'nonce', 0)
+    .description('cancel a trading order or cancel multiple orders')
+    .requiredOption('-H, --hash <hash>', 'hash', collect, [])
+    .option('-n, --nonce <nonce>', 'nonce')
     .action(async (params) => {
         if (params.hash.length === 1) {
             await tomox.cancelOrder(params.hash[0], params.nonce).then(data => {
@@ -298,7 +298,7 @@ commander
     .command('lending-hash')
     .description('show lending order by hash')
     .alias('get')
-    .requiredOption('-h , --hash <hash>', 'lending hash')
+    .requiredOption('-H , --hash <hash>', 'lending hash')
     .action(async (params) => {
         await tomox.getLendingByHash(params.hash).then(data => {
             console.log(data)
@@ -317,7 +317,7 @@ commander
 
 commander
     .command('lending-create')
-    .description('create a lendig order')
+    .description('create a lending order')
     .option('-c, --collateralToken <collateralToken>', 'collateral token', '0x0000000000000000000000000000000000000000')
     .requiredOption('-l, --lendingToken <lendingToken>', 'lending token', '0x0000000000000000000000000000000000000001')
     .requiredOption('-q, --quantity <quantity>', 'quantity', '2')
@@ -347,7 +347,7 @@ commander
 
 commander
     .command('ws-lending-create')
-    .description('create a lendig order via websocket')
+    .description('create a lending order via websocket')
     .option('-c, --collateralToken <collateralToken>', 'collateral token', '0xBD8b2Fb871F97b2d5F0A1af3bF73619b09174B2A')
     .requiredOption('-l, --lendingToken <lendingToken>', 'lending token', '0x0000000000000000000000000000000000000001')
     .requiredOption('-q, --quantity <quantity>', 'quantity', '2')
@@ -423,18 +423,10 @@ commander
 commander
     .command('lending-cancel')
     .description('cancel a lending order')
-    .requiredOption('-r, --relayerAddress <relayerAddress>')
-    .requiredOption('-l, --lendingToken <lendingToken>')
-    .requiredOption('-t, --term <term>')
-    .requiredOption('-i, --lendingId <lendingId>')
     .requiredOption('-H, --cancelHash <cancelHash>')
-    .option('-n, --nonce <nonce>', 'nonce', 0)
+    .option('-n, --nonce <nonce>', 'nonce')
     .action(async (params) => {
         await tomox.cancelLending({
-            relayerAddress: params.relayerAddress,
-            lendingToken: params.lendingToken,
-            term: params.term,
-            lendingId: params.lendingId,
             nonce: params.nonce,
             hash: params.cancelHash
         }).then(data => {
@@ -457,7 +449,7 @@ commander
 commander
     .command('ws-lending-orderbook')
     .description('watch lending orderbook')
-    .requiredOption('-t, --term <term>', '60', parseTerm)
+    .requiredOption('-t, --term <term>', 'lending term', parseTerm)
     .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
     .action(async (params) => {
         await tomox.watchLendingOrderBook(params).then(ws=> {
@@ -468,9 +460,9 @@ commander
     })
 
 commander
-    .command('ws-lending-trade')
+    .command('ws-lending-trades')
     .description('watch lending trades')
-    .requiredOption('-t, --term <term>', '60', parseTerm)
+    .requiredOption('-t, --term <term>', 'lending term', parseTerm)
     .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
     .action(async (params) => {
         await tomox.watchLendingTrade(params).then(ws=> {
@@ -484,10 +476,10 @@ commander
 commander
     .command('ws-lending-ohlcv')
     .description('watch lending OHLCV data')
-    .requiredOption('-t, --term <term>', '30', parseTerm)
+    .requiredOption('-t, --term <term>', 'lending term', parseTerm)
     .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
     .requiredOption('-u, --units <units>', 'min')
-    .requiredOption('-d, --duration <duration>', '1', parseDuration)
+    .requiredOption('-d, --duration <duration>', 'ohlcv duration, candle side', parseDuration)
     .action(async (params) => {
         await tomox.watchLendingOhlcv(params).then(ws=> {
             ws.on('message', (message) => {
@@ -495,6 +487,7 @@ commander
             })
         }).catch(e => console.log(e))
     })
+
 commander
     .command('lending-pairs')
     .description('show lending pairs')

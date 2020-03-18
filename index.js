@@ -1064,22 +1064,24 @@ class TomoXJS {
             }
         })
     }
-    cancelLending(order) {
+    cancelLending({hash, nonce}) {
         return new Promise(async (resolve, reject) => {
             try {
                 let relayer = await this.getRelayerInfo()
                 let url = urljoin(this.relayerUri, '/api/lending/cancel')
-                let nonce = order.nonce || await this.getLendingNonce()
+                nonce = nonce || await this.getLendingNonce()
+                let order = await this.getLendingByHash(hash)
+                console.log(order)
                 let o = {
                     userAddress: this.coinbase,
-                    relayerAddress: order.relayerAddress || relayer.relayerAddress,
+                    relayerAddress: order.relayerAddress || relayer.exchangeAddress,
                     lendingToken: order.lendingToken,
                     term: order.term,
                     lendingId: order.lendingId,
                     status: 'CANCELLED'
                 }
                 o.nonce = String(nonce)
-                o.hash = order.hash
+                o.hash = hash
                 let signature = await this.wallet.signMessage(ethers.utils.arrayify(this.getLendingCancelHash(o)))
                 let { r, s, v } = ethers.utils.splitSignature(signature)
 
