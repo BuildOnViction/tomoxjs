@@ -791,7 +791,6 @@ class TomoXJS {
                     'bytes',
                     'bytes',
                     'bytes',
-                    'bytes',
                     'uint256',
                     'uint256',
                     'string',
@@ -802,7 +801,6 @@ class TomoXJS {
                 [
                     order.relayerAddress,
                     order.userAddress,
-                    order.collateralToken,
                     order.lendingToken,
                     order.quantity,
                     order.term,
@@ -850,7 +848,6 @@ class TomoXJS {
                 'bytes',
                 'bytes',
                 'bytes',
-                'bytes',
                 'uint256',
                 'uint256',
                 'uint256',
@@ -862,7 +859,6 @@ class TomoXJS {
             [
                 order.relayerAddress,
                 order.userAddress,
-                order.collateralToken,
                 order.lendingToken,
                 order.quantity,
                 order.term,
