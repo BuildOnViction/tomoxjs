@@ -1528,7 +1528,7 @@ class TomoXJS {
             })
         })
     }
-    getLendingTrades(params) {
+    getLendingTradesHistory(params) {
         return new Promise((resolve, reject) => {
             let url = urljoin(this.relayerUri, '/api/lending/trades/history')
             let qs = {

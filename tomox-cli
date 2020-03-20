@@ -549,7 +549,7 @@ commander
     .requiredOption('-t, --term <term>', 'term')
     .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
     .action(async (params) => {
-        await tomox.getLendingTrades(params).then(data => {
+        await tomox.getLendingTradesHistory(params).then(data => {
             console.log(data)
         }).catch(e => console.log(e))
     })
