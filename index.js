@@ -1558,6 +1558,101 @@ class TomoXJS {
             })
         })
     }
+    getLendingTerms() {
+        return new Promise((resolve, reject) => {
+
+            let url = urljoin(this.relayerUri, '/api/lending/terms')
+            let options = {
+                method: 'GET',
+                url: url,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+                try {
+                    let pairs = (body || {}).data
+                    return resolve(pairs)
+                } catch (e) {
+                    return reject(Error('Can not get term, check relayer uri again'))
+                }
+            })
+        })
+    }
+    getLendingOrders(params) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerUri, '/api/lending/orders')
+            let qs = {
+                term: params.term,
+                lendingToken: params.lendingToken,
+                address: params.address || this.coinbase,
+                lendingStatus: params.lendingStatus,
+                from: params.from,
+                to: params.to,
+                pageOffset: params.pageOffset,
+                pageSize: params.pageSize
+            }
+            let options = {
+                method: 'GET',
+                url: url,
+                qs: qs,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+                try {
+                    let pairs = (body || {}).data
+                    return resolve(pairs)
+                } catch (e) {
+                    return reject(Error('Can not get orders, check relayer uri again'))
+                }
+            })
+        })
+    }
+    getLendingTrades(params) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerUri, '/api/lending/trades')
+            let qs = {
+                term: params.term,
+                lendingToken: params.lendingToken,
+                address: params.address || this.coinbase,
+                status: params.status,
+                from: params.from,
+                to: params.to,
+                pageOffset: params.pageOffset,
+                pageSize: params.pageSize
+            }
+            let options = {
+                method: 'GET',
+                url: url,
+                qs: qs,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+                try {
+                    let pairs = (body || {}).data
+                    return resolve(pairs)
+                } catch (e) {
+                    return reject(Error('Can not trade, check relayer uri again'))
+                }
+            })
+        })
+    }
 }
 
 module.exports = TomoXJS
