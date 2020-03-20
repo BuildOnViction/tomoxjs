@@ -543,7 +543,7 @@ commander
     })
 
 commander
-    .command('lending-trades')
+    .command('lending-trades-history')
     .description('show lending trades')
     .option('-a, --address <address>', 'address')
     .requiredOption('-t, --term <term>', 'term')
@@ -554,5 +554,42 @@ commander
         }).catch(e => console.log(e))
     })
 
+    commander
+    .command('lending-terms')
+    .action(async () => {
+        await tomox.getLendingTerms().then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
+commander
+    .command('lending-orders')
+    .option('-a, --address <address>', 'address')
+    .option('-l, --lendingToken <lendingToken>', 'lendingToken')
+    .option('-c, --collateralToken <collateralToken>', 'collateralToken')
+    .option('-t, --term <term>', 'term')
+    .option('-s, --lendingStatus <lendingStatus>', 'lendingStatus')
+    .option('-F, --from <from>', 'from')
+    .option('-T, --to <to>', 'to')
+    .option('-O, --pageOffset <pageOffset>', 'pageOffset')
+    .option('-S, --pageSize <pageSize>', 'pageSize')
+    .action(async (params) => {
+        await tomox.getLendingOrders(params).then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
 
+commander
+    .command('lending-trades')
+    .option('-l, --lendingToken <lendingToken>', 'lendingToken')
+    .option('-t, --term <term>', 'term')
+    .option('-s, --status <status>', 'status')
+    .option('-F, --from <from>', 'from')
+    .option('-T, --to <to>', 'to')
+    .option('-O, --pageOffset <pageOffset>', 'pageOffset')
+    .option('-S, --pageSize <pageSize>', 'pageSize')
+    .action(async (params) => {
+        await tomox.getLendingTrades(params).then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
 commander.parse(process.argv)
