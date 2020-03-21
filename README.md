@@ -124,42 +124,46 @@ Usage: tomox-cli [options] [command]
 TomoX Market CLI
 
 Options:
-  -V, --version                         output the version number
-  -h, --help                            output usage information
+  -V, --version                      output the version number
+  -C --config <path>                 set config path. defaults to $HOME/.tomoxjs
+  -h, --help                         output usage information
 
 Commands:
-  init [options]                        setup/init environment
-  env                                   show environment information
-  create [options]                      create a trading order
-  cancel [options]                      cancel a trading order
-  pairs                                 show trading pairs
-  o-list|list [options]                 show user orders
-  o-get|get [options]                   show order by hash
-  orderbook [options]                   show trading orderbook
-  ohlcv [options]                       show trading OHLCV data
-  info                                  show DEX information
-  ws-orderbook [options]                watch trading orderbook
-  ws-ohlcv [options]                    watch trading OHLCV data
-  ws-trades [options]                   watch trades
-  ws-price-board|price-board [options]  watch price board
-  ws-markets|markets                    watch trading market
-  lending-hash|get [options]            show lending order by hash
-  lending-nonce                         show lending user nonce
-  lending-create [options]              create a lendig order
-  lending-create-ws [options]           create a lendig order via websocket
-  lending-repay [options]               repay a loan
-  lending-topup [options]               topup a loan
-  lending-cancel [options]              cancel a lending order
-  lending-orderbook [options]           show lending orderbook
-  ws-lending-orderbook [options]        watch lending orderbook
-  ws-lending-trade [options]            watch lending trades
-  ws-lending-ohlcv [options]            watch lending OHLCV data
-  lending-pairs                         show lending pairs
-  lending-markets                       show all lending markets
-  lending-market [options]              show lending market by pairs
-  ws-lending-markets|lending-markets    watch all lending markets
-  lending-tokens                        show lending tokens
-  collateral-tokens                     show lending collateral tokens
+  init [options]                     setup/init environment
+  env                                show environment information
+  create [options]                   create a trading order
+  cancel [options]                   cancel a trading order or cancel multiple orders
+  pairs                              show trading pairs
+  o-list|list [options]              show user orders
+  o-get|get [options]                show order by hash
+  orderbook [options]                show trading orderbook
+  ohlcv [options]                    show trading OHLCV data
+  info                               show DEX information
+  ws-orderbook [options]             watch trading orderbook
+  ws-ohlcv [options]                 watch trading OHLCV data
+  ws-trades [options]                watch trades
+  ws-price-board [options]           watch price board
+  ws-markets                         watch trading market
+  lending-hash|l-hash [options]      show lending order by hash
+  lending-nonce                      show lending user nonce
+  lending-create|l-create [options]  create a lending order
+  ws-lending-create [options]        create a lending order via websocket
+  lending-repay [options]            repay a loan
+  lending-topup [options]            topup a loan
+  lending-cancel [options]           cancel a lending order
+  lending-orderbook [options]        show lending orderbook
+  ws-lending-orderbook [options]     watch lending orderbook
+  ws-lending-trades [options]        watch lending trades
+  ws-lending-ohlcv [options]         watch lending OHLCV data
+  lending-pairs                      show lending pairs
+  lending-markets [options]          show lending markets
+  ws-lending-markets                 watch all lending markets
+  lending-tokens|l-tokens            show lending tokens
+  collateral-tokens                  show lending collateral tokens
+  lending-trades-history [options]   show lending trades
+  lending-terms
+  lending-orders|l-orders [options]
+  lending-trades|l-trades [options]
 ```
 
 ### Create Order CLI
