@@ -8,30 +8,39 @@ const fs = require('fs')
 const path = require('path')
 const os = require('os')
 const ethers = require('ethers')
+const dotenv = require('dotenv')
 
 let configPath = path.resolve(process.cwd(), '.env')
 if (fs.existsSync(path.resolve(require('os').homedir(), '.tomoxjs'))) {
     configPath = path.resolve(require('os').homedir(), '.tomoxjs')
 }
 
-require('dotenv').config({ path: configPath })
-
-if ((process.argv.indexOf('--help') < 0) && (process.argv.indexOf('init') < 0)
-    && (process.argv.indexOf('config') < 0)) {
-    if (!process.env.DEX_URI || !process.env.TRADER_PKEY) {
-        console.log('DEX_URI, TRADER_PKEY env are require, please create .env file')
-        process.exit(1)
-    }
-}
-
-const tomox = new TomoXJS(
-    process.env.DEX_URI,
-    process.env.DEX_WS_URI,
-    process.env.TRADER_PKEY)
+let tomox = new TomoXJS()
 
 commander
     .version(pjson.version)
+    .option('-C --config <path>', 'set config path. defaults to $HOME/.tomoxjs')
     .description('TomoX Market CLI')
+    .action((params) => {
+        configPath = params.config || configPath
+        dotenv.config({ path: configPath })
+
+        if ((process.argv.indexOf('--help') < 0) && (process.argv.indexOf('init') < 0)
+            && (process.argv.indexOf('config') < 0)) {
+            if (!process.env.DEX_URI || !process.env.TRADER_PKEY) {
+                console.log('DEX_URI, TRADER_PKEY env are require, please create .env file')
+                process.exit(1)
+            }
+        }
+        tomox = new TomoXJS(
+            process.env.DEX_URI,
+            process.env.DEX_WS_URI,
+            process.env.TRADER_PKEY)
+    })
+
+if (process.argv.indexOf('--help') < 0 && process.argv.indexOf('-h') < 0) {
+    commander.parse(process.argv)
+}
 
 commander
     .command('init')
@@ -60,7 +69,7 @@ commander
         }
         prompt(questions).then(async answers => {
             try {
-                let tomoxjsPath = path.resolve(require('os').homedir(), '.tomoxjs')
+                let tomoxjsPath = path.resolve(configPath)
                 let address = ''
 
                 if (params.keystore) {
@@ -92,9 +101,9 @@ commander
     })
 
 commander
-    .command('config')
+    .command('env')
     .description('show environment information')
-    .action(() => {
+    .action((params) => {
         console.log(`
         configPath: ${configPath}
         DEX_URI: ${process.env.DEX_URI}
@@ -592,4 +601,5 @@ commander
             console.log(data)
         }).catch(e => console.log(e))
     })
+
 commander.parse(process.argv)
