@@ -276,7 +276,6 @@ commander
 commander
     .command('ws-price-board')
     .description('watch price board')
-    .alias('price-board')
     .requiredOption('-b, --baseToken <baseToken>', 'base token')
     .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
     .action(async (params) => {
@@ -290,7 +289,6 @@ commander
 commander
     .command('ws-markets')
     .description('watch trading market')
-    .alias('markets')
     .action(async () => {
         await tomox.watchMarkets().then(ws => {
             ws.on('message', (message) => {
@@ -305,8 +303,8 @@ commander
  
   commander
     .command('lending-hash')
+    .alias('l-hash')
     .description('show lending order by hash')
-    .alias('get')
     .requiredOption('-H , --hash <hash>', 'lending hash')
     .action(async (params) => {
         await tomox.getLendingByHash(params.hash).then(data => {
@@ -326,6 +324,7 @@ commander
 
 commander
     .command('lending-create')
+    .alias('l-create')
     .description('create a lending order')
     .option('-c, --collateralToken <collateralToken>', 'collateral token', '0x0000000000000000000000000000000000000000')
     .requiredOption('-l, --lendingToken <lendingToken>', 'lending token', '0x0000000000000000000000000000000000000001')
@@ -536,6 +535,7 @@ commander
 
 commander
     .command('lending-tokens')
+    .alias('l-tokens')
     .description('show lending tokens')
     .action(async () => {
         await tomox.getLendingTokens().then(data => {
@@ -572,6 +572,7 @@ commander
     })
 commander
     .command('lending-orders')
+    .alias('l-orders')
     .option('-a, --address <address>', 'address')
     .option('-l, --lendingToken <lendingToken>', 'lendingToken')
     .option('-c, --collateralToken <collateralToken>', 'collateralToken')
@@ -589,6 +590,7 @@ commander
 
 commander
     .command('lending-trades')
+    .alias('l-trades')
     .option('-l, --lendingToken <lendingToken>', 'lendingToken')
     .option('-t, --term <term>', 'term')
     .option('-s, --status <status>', 'status')

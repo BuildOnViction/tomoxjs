@@ -129,7 +129,7 @@ Options:
 
 Commands:
   init [options]                        setup/init environment
-  config                                show environment information
+  env                                   show environment information
   create [options]                      create a trading order
   cancel [options]                      cancel a trading order
   pairs                                 show trading pairs
