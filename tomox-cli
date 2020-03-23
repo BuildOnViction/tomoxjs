@@ -19,6 +19,7 @@ let tomox = new TomoXJS()
 
 commander
     .version(pjson.version)
+    .allowUnknownOption()
     .option('-C --config <path>', 'set config path. defaults to $HOME/.tomoxjs')
     .description('TomoX Market CLI')
     .action((params) => {
