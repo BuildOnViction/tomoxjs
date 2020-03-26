@@ -1653,6 +1653,28 @@ class TomoXJS {
             })
         })
     }
+    watchLendingPriceBoard({ term, lendingToken }) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerWsUri)
+            const ws = new WebSocket(url)
+            ws.on('close', () => { 
+                resolve()
+            })
+            ws.on('open', function connection() {
+                ws.send(JSON.stringify({
+                    channel: 'lending_price_board',
+                    event: {
+                        type: 'SUBSCRIBE',
+                        payload: {
+                            term: term,
+                            lendingToken: lendingToken
+                        }
+                    }
+                }))
+                resolve(ws)
+            })
+        })
+    }
 }
 
 module.exports = TomoXJS
