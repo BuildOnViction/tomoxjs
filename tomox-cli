@@ -619,4 +619,37 @@ commander
         }).catch(e => console.log(e))
     })
 
+commander
+    .command('lending-topups')
+    .alias('l-topups')
+    .option('-a, --address <address>', 'address')
+    .option('-l, --lendingToken <lendingToken>', 'lendingToken')
+    .option('-c, --collateralToken <collateralToken>', 'collateralToken')
+    .option('-t, --term <term>', 'term')
+    .option('-F, --from <from>', 'from')
+    .option('-T, --to <to>', 'to')
+    .option('-O, --pageOffset <pageOffset>', 'pageOffset')
+    .option('-S, --pageSize <pageSize>', 'pageSize')
+    .action(async (params) => {
+        await tomox.getLendingTopups(params).then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
+
+commander
+    .command('lending-repays')
+    .alias('l-repays')
+    .option('-a, --address <address>', 'address')
+    .option('-l, --lendingToken <lendingToken>', 'lendingToken')
+    .option('-t, --term <term>', 'term')
+    .option('-F, --from <from>', 'from')
+    .option('-T, --to <to>', 'to')
+    .option('-O, --pageOffset <pageOffset>', 'pageOffset')
+    .option('-S, --pageSize <pageSize>', 'pageSize')
+    .action(async (params) => {
+        await tomox.getLendingRepays(params).then(data => {
+            console.log(data)
+        }).catch(e => console.log(e))
+    })
+
 commander.parse(process.argv)

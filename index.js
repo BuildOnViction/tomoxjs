@@ -1675,6 +1675,76 @@ class TomoXJS {
             })
         })
     }
+    getLendingTopups(params) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerUri, '/api/lending/topup')
+            let qs = {
+                term: params.term,
+                lendingToken: params.lendingToken,
+                collateralToken: params.collateralToken,
+                address: params.address || this.coinbase,
+                from: params.from,
+                to: params.to,
+                pageOffset: params.pageOffset,
+                pageSize: params.pageSize
+            }
+            let options = {
+                method: 'GET',
+                url: url,
+                qs: qs,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+                try {
+                    let pairs = (body || {}).data
+                    return resolve(pairs)
+                } catch (e) {
+                    return reject(Error('Can not get topup, check again'))
+                }
+            })
+        })
+    }
+
+    getLendingRepays(params) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerUri, '/api/lending/repay')
+            let qs = {
+                term: params.term,
+                lendingToken: params.lendingToken,
+                address: params.address || this.coinbase,
+                from: params.from,
+                to: params.to,
+                pageOffset: params.pageOffset,
+                pageSize: params.pageSize
+            }
+            let options = {
+                method: 'GET',
+                url: url,
+                qs: qs,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+                try {
+                    let pairs = (body || {}).data
+                    return resolve(pairs)
+                } catch (e) {
+                    return reject(Error('Can not get topup, check again'))
+                }
+            })
+        })
+    }
 }
 
 module.exports = TomoXJS
