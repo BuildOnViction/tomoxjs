@@ -925,7 +925,8 @@ class TomoXJS {
                 'bytes',
                 'uint256',
                 'uint256',
-                'uint256'
+                'uint256',
+                'string'
             ],
             [
                 order.nonce,
@@ -935,7 +936,8 @@ class TomoXJS {
                 order.lendingToken,
                 order.term,
                 order.tradeId,
-                order.quantity
+                order.quantity,
+                order.type
             ],
         )
     }
@@ -1166,7 +1168,8 @@ class TomoXJS {
                     term: order.term,
                     quantity: order.quantity,
                     tradeId: order.tradeId,
-                    status: 'TOPUP'
+                    status: 'NEW',
+                    type: 'TOPUP'
                 }
                 let collateralToken = await this.getTokenInfo(order.collateralToken)
 
