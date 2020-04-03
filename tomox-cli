@@ -386,8 +386,9 @@ commander
     })
 
 commander
-    .command('lending-repay')
-    .description('repay a loan')
+    .command('create-lending-repay')
+    .alias('repay')
+    .description('create repay a loan')
     .option('-r, --relayerAddress <relayerAddress>')
     .requiredOption('-l, --lendingToken <lendingToken>')
     .requiredOption('-t, --term <term>')
@@ -406,8 +407,9 @@ commander
     })
 
 commander
-    .command('lending-topup')
-    .description('topup a loan')
+    .command('create-lending-topup')
+    .description('create topup a loan')
+    .alias('topup')
     .option('-r, --relayerAddress <relayerAddress>')
     .requiredOption('-l, --lendingToken <lendingToken>')
     .requiredOption('-t, --term <term>')
@@ -566,6 +568,7 @@ commander
 
     commander
     .command('lending-terms')
+    .description('show lending terms')
     .action(async () => {
         await tomox.getLendingTerms().then(data => {
             console.log(data)
@@ -574,6 +577,7 @@ commander
 commander
     .command('lending-orders')
     .alias('l-orders')
+    .description('show list lending orders')
     .option('-a, --address <address>', 'address')
     .option('-l, --lendingToken <lendingToken>', 'lendingToken')
     .option('-c, --collateralToken <collateralToken>', 'collateralToken')
@@ -592,6 +596,7 @@ commander
 commander
     .command('lending-trades')
     .alias('l-trades')
+    .description('show list lending trades')
     .option('-l, --lendingToken <lendingToken>', 'lendingToken')
     .option('-t, --term <term>', 'term')
     .option('-s, --status <status>', 'status')
