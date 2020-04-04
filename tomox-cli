@@ -40,623 +40,629 @@ commander
     })
 
 if (process.argv.indexOf('--help') < 0 && process.argv.indexOf('-h') < 0) {
-    commander.parse(process.argv)
+    commander.parseAsync(process.argv).then(() => {
+        run()
+    })
+} else {
+    run()
 }
 
-commander
-    .command('init')
-    .description('setup/init environment')
-    .option('-p, --password <password>', 'password', '')
-    .option('-k, --keystore <keystore>', 'path to keystore file', '')
-    .action(async (params) => {
-        const questions = [{
-            type : 'input',
-            name : 'dexUri',
-            message : 'Enter DEX Uri (default: https://dex.tomochain.com)...',
-            default: 'https://dex.tomochain.com'
+function run() {
+    commander
+        .command('init')
+        .description('setup/init environment')
+        .option('-p, --password <password>', 'password', '')
+        .option('-k, --keystore <keystore>', 'path to keystore file', '')
+        .action(async (params) => {
+            const questions = [{
+                type : 'input',
+                name : 'dexUri',
+                message : 'Enter DEX Uri (default: https://dex.tomochain.com)...',
+                default: 'https://dex.tomochain.com'
 
-        }, {
-            type : 'input',
-            name : 'dexWsUri',
-            message : 'Enter DEX WebSocket Uri (default: wss://dex.tomochain.com/socket)...',
-            default: 'wss://dex.tomochain.com/socket'
-        }]
-        if (!params.keystore) {
-            questions.push({
-                type : 'password',
-                name : 'traderPKey',
-                message : 'Enter trader private key (default: Random)...'
-            })
-        }
-        prompt(questions).then(async answers => {
-            try {
-                let tomoxjsPath = path.resolve(configPath)
-                let address = ''
-
-                if (params.keystore) {
-                    let keydata = fs.readFileSync(params.keystore);
-                    let json = JSON.parse(keydata);
-                    let wallet = await ethers.Wallet.fromEncryptedJson(JSON.stringify(json), params.password)
-                    answers.traderPKey = wallet.privateKey
-                    address = wallet.address
-                }
-
-                if (!answers.traderPKey) {
-                    let randomWallet = ethers.Wallet.createRandom()
-                    answers.traderPKey = randomWallet.privateKey
-                    address = randomWallet.address
-                } else {
-                    let wallet = new ethers.Wallet(answers.traderPKey)
-                    address = wallet.address
-                }
-
-                fs.writeFile(tomoxjsPath, `DEX_URI=${answers.dexUri}\nDEX_WS_URI=${answers.dexWsUri}\nTRADER_PKEY=${answers.traderPKey}\nTRADER_ADDR=${address}\n`, function (err) {
-                    if (err) throw err;
-                    console.log('Address:', address);
-                    console.log('Saved!');
+            }, {
+                type : 'input',
+                name : 'dexWsUri',
+                message : 'Enter DEX WebSocket Uri (default: wss://dex.tomochain.com/socket)...',
+                default: 'wss://dex.tomochain.com/socket'
+            }]
+            if (!params.keystore) {
+                questions.push({
+                    type : 'password',
+                    name : 'traderPKey',
+                    message : 'Enter trader private key (default: Random)...'
                 })
-            } catch (e) {
-                console.log(e)
             }
+            prompt(questions).then(async answers => {
+                try {
+                    let tomoxjsPath = path.resolve(configPath)
+                    let address = ''
+
+                    if (params.keystore) {
+                        let keydata = fs.readFileSync(params.keystore);
+                        let json = JSON.parse(keydata);
+                        let wallet = await ethers.Wallet.fromEncryptedJson(JSON.stringify(json), params.password)
+                        answers.traderPKey = wallet.privateKey
+                        address = wallet.address
+                    }
+
+                    if (!answers.traderPKey) {
+                        let randomWallet = ethers.Wallet.createRandom()
+                        answers.traderPKey = randomWallet.privateKey
+                        address = randomWallet.address
+                    } else {
+                        let wallet = new ethers.Wallet(answers.traderPKey)
+                        address = wallet.address
+                    }
+
+                    fs.writeFile(tomoxjsPath, `DEX_URI=${answers.dexUri}\nDEX_WS_URI=${answers.dexWsUri}\nTRADER_PKEY=${answers.traderPKey}\nTRADER_ADDR=${address}\n`, function (err) {
+                        if (err) throw err;
+                        console.log('Address:', address);
+                        console.log('Saved!');
+                    })
+                } catch (e) {
+                    console.log(e)
+                }
+            })
         })
-    })
 
-commander
-    .command('env')
-    .description('show environment information')
-    .action((params) => {
-        console.log(`
-        configPath: ${configPath}
-        DEX_URI: ${process.env.DEX_URI}
-        DEX_WS_URI: ${process.env.DEX_WS_URI}
-        TRADER_ADDR: ${process.env.TRADER_ADDR}
-        TRADER_PKEY: ******
-        `)
-    })
+    commander
+        .command('env')
+        .description('show environment information')
+        .action((params) => {
+            console.log(`
+            configPath: ${configPath}
+            DEX_URI: ${process.env.DEX_URI}
+            DEX_WS_URI: ${process.env.DEX_WS_URI}
+            TRADER_ADDR: ${process.env.TRADER_ADDR}
+            TRADER_PKEY: ******
+            `)
+        })
 
-commander
-    .command('create')
-    .description('create a trading order')
-    .option('-b, --baseToken <baseToken>', 'base token', '0xBD8b2Fb871F97b2d5F0A1af3bF73619b09174B2A')
-    .option('-q, --quoteToken <quoteToken>', 'quote token', '0x0000000000000000000000000000000000000001')
-    .option('-p, --price <price>', 'price', '21207')
-    .option('-a, --amount <amount>', 'amount', '00469')
-    .option('-s, --side <side>', 'side', 'BUY')
-    .option('-t, --type <type>', 'type', 'LO')
-    .option('-e, --exchangeAddress <exchangeAddress>', 'exchangeAddress')
-    .action(async (params) => {
-        await tomox.createOrder({
-                baseToken: params.baseToken,
-                quoteToken: params.quoteToken,
-                exchangeAddress: params.exchangeAddress,
-                price: params.price,
-                side: params.side,
-                type: params.type,
-                amount: params.amount
-        }).then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
-
-function collect(value, previous) {
-    return previous.concat([value]);
-}
-
-function parseDuration(value, previous) {
-    return parseInt(value)
-}
-
-function parseTerm(value, previous) {
-    return parseInt(value)
-}
-
-commander
-    .command('cancel')
-    .description('cancel a trading order or cancel multiple orders')
-    .requiredOption('-H, --hash <hash>', 'hash', collect, [])
-    .option('-n, --nonce <nonce>', 'nonce')
-    .action(async (params) => {
-        if (params.hash.length === 1) {
-            await tomox.cancelOrder(params.hash[0], params.nonce).then(data => {
+    commander
+        .command('create')
+        .description('create a trading order')
+        .option('-b, --baseToken <baseToken>', 'base token', '0xBD8b2Fb871F97b2d5F0A1af3bF73619b09174B2A')
+        .option('-q, --quoteToken <quoteToken>', 'quote token', '0x0000000000000000000000000000000000000001')
+        .option('-p, --price <price>', 'price', '21207')
+        .option('-a, --amount <amount>', 'amount', '00469')
+        .option('-s, --side <side>', 'side', 'BUY')
+        .option('-t, --type <type>', 'type', 'LO')
+        .option('-e, --exchangeAddress <exchangeAddress>', 'exchangeAddress')
+        .action(async (params) => {
+            await tomox.createOrder({
+                    baseToken: params.baseToken,
+                    quoteToken: params.quoteToken,
+                    exchangeAddress: params.exchangeAddress,
+                    price: params.price,
+                    side: params.side,
+                    type: params.type,
+                    amount: params.amount
+            }).then(data => {
                 console.log(data)
             }).catch(e => console.log(e))
-        }
-        if (params.hash.length > 1) {
-            await tomox.cancelManyOrders(params.hash, params.nonce).then(data => {
-                console.log(data)
-            }).catch(e => console.log(e))
-        }
-    })
-
-commander
-    .command('pairs')
-    .description('show trading pairs')
-    .action(async () => {
-        await tomox.getPairs().then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
-
-commander
-    .command('o-list')
-    .description('show user orders')
-    .alias('list')
-    .option('-b, --baseToken <baseToken>', 'base token')
-    .option('-q, --quoteToken <quoteToken>', 'quote token')
-    .option('-s, --status <status>', 'order status')
-    .action(async (params) => {
-        await tomox.getOrders(params).then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
-
-commander
-    .command('o-get')
-    .description('show order by hash')
-    .alias('get')
-    .requiredOption('-s, --hash <hash>', 'order hash')
-    .action(async (params) => {
-        await tomox.getOrderByHash(params.hash).then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
-
-commander
-    .command('orderbook')
-    .description('show trading orderbook')
-    .requiredOption('-b, --baseToken <baseToken>', 'base token')
-    .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
-    .action(async (params) => {
-        await tomox.getOrderBook(params).then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
-
-commander
-    .command('ohlcv')
-    .description('show trading OHLCV data')
-    .requiredOption('-b, --baseToken <baseToken>', 'base token')
-    .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
-    .requiredOption('-i, --timeInterval <timeInterval>', 'time interval, candle size. Valid values: 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 1w, 1mo (1 month)')
-    .action(async (params) => {
-        await tomox.getOHLCV(params).then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
-
-commander
-    .command('info')
-    .description('show DEX information')
-    .action(async () => {
-        await tomox.getRelayerInfo().then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
-
-commander
-    .command('ws-orderbook')
-    .description('watch trading orderbook')
-    .requiredOption('-b, --baseToken <baseToken>', 'base token')
-    .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
-    .action(async (params) => {
-        await tomox.watchOrderBook(params).then(ws=> {
-            ws.on('message', (message) => {
-                console.log('%s', message)
-            })
-        }).catch(e => console.log(e))
-    })
-
-commander
-    .command('ws-ohlcv')
-    .description('watch trading OHLCV data')
-    .requiredOption('-b, --baseToken <baseToken>', 'base token')
-    .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
-    .requiredOption('-u, --units <units>', 'min')
-    .requiredOption('-d, --duration <duration>', '1', parseDuration)
-    .action(async (params) => {
-        await tomox.watchOHLCV(params).then(ws=> {
-            ws.on('message', (message) => {
-                console.log('%s', message)
-            })
-        }).catch(e => console.log(e))
-    })
-
-commander
-    .command('ws-trades')
-    .description('watch trades')
-    .requiredOption('-b, --baseToken <baseToken>', 'base token')
-    .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
-    .action(async (params) => {
-        await tomox.watchTrades(params).then(ws => {
-            ws.on('message', (message) => {
-                console.log('%s', message)
-            })
-        }).catch(e => console.log(e))
-    })
-
-commander
-    .command('ws-price-board')
-    .description('watch price board')
-    .requiredOption('-b, --baseToken <baseToken>', 'base token')
-    .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
-    .action(async (params) => {
-        await tomox.watchPriceBoard(params).then(ws => {
-            ws.on('message', (message) => {
-                console.log('%s', message)
-            })
-        }).catch(e => console.log(e))
-    })
-
-commander
-    .command('ws-markets')
-    .description('watch trading market')
-    .action(async () => {
-        await tomox.watchMarkets().then(ws => {
-            ws.on('message', (message) => {
-                console.log('%s', message)
-            })
-        }).catch(e => console.log(e))
-    })
+        })
 
     function collect(value, previous) {
         return previous.concat([value]);
-  }
- 
-  commander
-    .command('lending-hash')
-    .alias('l-hash')
-    .description('show lending order by hash')
-    .requiredOption('-H , --hash <hash>', 'lending hash')
-    .action(async (params) => {
-        await tomox.getLendingByHash(params.hash).then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
+    }
 
+    function parseDuration(value, previous) {
+        return parseInt(value)
+    }
 
-  commander
-    .command('lending-nonce')
-    .description('show lending user nonce')
-    .action(async () => {
-        await tomox.getLendingNonce().then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
-
-commander
-    .command('lending-create')
-    .alias('l-create')
-    .description('create a lending order')
-    .option('-c, --collateralToken <collateralToken>', 'collateral token')
-    .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
-    .requiredOption('-q, --quantity <quantity>', 'quantity')
-    .requiredOption('-i, --interest <interest>', 'interest')
-    .option('-e, --term <term>', 'term', '86400')
-    .option('-s, --side <side>', 'side', 'INVEST')
-    .option('-t, --type <type>', 'type', 'LO')
-    .option('-r, --relayerAddress <relayerAddress>', 'relayerAddress')
-    .option('-n, --nonce <nonce>')
-    .option('-u, --autoTopUp <autoTopUp>', '1')
-    .action(async (params) => {
-        await tomox.createLending({
-            collateralToken: params.collateralToken,
-            lendingToken: params.lendingToken,
-            relayerAddress: params.relayerAddress,
-            quantity: params.quantity,
-            interest: params.interest,
-            term: params.term,
-            side: params.side,
-            type: params.type,
-            nonce: params.nonce,
-            autoTopUp: params.autoTopUp,
-        }).then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
-
-commander
-    .command('ws-lending-create')
-    .description('create a lending order via websocket')
-    .option('-c, --collateralToken <collateralToken>', 'collateral token', '0xBD8b2Fb871F97b2d5F0A1af3bF73619b09174B2A')
-    .requiredOption('-l, --lendingToken <lendingToken>', 'lending token', '0x0000000000000000000000000000000000000001')
-    .requiredOption('-q, --quantity <quantity>', 'quantity', '2')
-    .requiredOption('-i, --interest <interest>', 'interest', '10')
-    .option('-e, --term <term>', 'term', '86400')
-    .option('-s, --side <side>', 'side', 'INVEST')
-    .option('-t, --type <type>', 'type', 'LO')
-    .option('-r, --relayerAddress <relayerAddress>', 'relayerAddress')
-    .option('-n, --nonce <nonce>')
-    .action(async (params) => {
-
-        await tomox.createWsLending({
-            collateralToken: params.collateralToken,
-            lendingToken: params.lendingToken,
-            relayerAddress: params.relayerAddress,
-            quantity: params.quantity,
-            interest: params.interest,
-            term: params.term,
-            side: params.side,
-            type: params.type,
-            nonce: params.nonce,
-        }).then(ws => {
-            ws.on('message', (message) => {
-                console.log('%s', message)
-            })
-        }).catch(e => console.log(e))
-    })
-
-commander
-    .command('create-lending-repay')
-    .alias('repay')
-    .description('create repay a loan')
-    .option('-r, --relayerAddress <relayerAddress>')
-    .requiredOption('-l, --lendingToken <lendingToken>')
-    .requiredOption('-t, --term <term>')
-    .requiredOption('-i, --tradeId <tradeId>')
-    .option('-n, --nonce <nonce>')
-    .action(async (params) => {
-        await tomox.repayLending({
-            relayerAddress: params.relayerAddress,
-            lendingToken: params.lendingToken,
-            term: params.term,
-            tradeId: params.tradeId,
-            nonce: params.nonce,
-        }).then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
-
-commander
-    .command('create-lending-topup')
-    .description('create topup a loan')
-    .alias('topup')
-    .option('-r, --relayerAddress <relayerAddress>')
-    .requiredOption('-l, --lendingToken <lendingToken>')
-    .requiredOption('-t, --term <term>')
-    .requiredOption('-c, --collateralToken <collateralToken>')
-    .requiredOption('-q, --quantity <quantity>')
-    .requiredOption('-i, --tradeId <tradeId>')
-    .option('-n, --nonce <nonce>')
-    .action(async (params) => {
-        await tomox.topupLending({
-            relayerAddress: params.relayerAddress,
-            lendingToken: params.lendingToken,
-            term: params.term,
-            collateralToken: params.collateralToken,
-            quantity: params.quantity,
-            tradeId: params.tradeId,
-            nonce: params.nonce,
-        }).then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
-
-commander
-    .command('lending-cancel')
-    .description('cancel a lending order')
-    .requiredOption('-H, --cancelHash <cancelHash>')
-    .option('-n, --nonce <nonce>', 'nonce')
-    .action(async (params) => {
-        await tomox.cancelLending({
-            nonce: params.nonce,
-            hash: params.cancelHash
-        }).then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-        
-    })
-
-commander
-    .command('lending-orderbook')
-    .description('show lending orderbook')
-    .requiredOption('-t, --term <term>', '60')
-    .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
-    .action(async (params) => {
-        await tomox.getLendingOrderBook(params).then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
-
-commander
-    .command('ws-lending-orderbook')
-    .description('watch lending orderbook')
-    .requiredOption('-t, --term <term>', 'lending term', parseTerm)
-    .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
-    .action(async (params) => {
-        await tomox.watchLendingOrderBook(params).then(ws=> {
-            ws.on('message', (message) => {
-                console.log('%s', message)
-            })
-        }).catch(e => console.log(e))
-    })
-
-commander
-    .command('ws-lending-trades')
-    .description('watch lending trades')
-    .requiredOption('-t, --term <term>', 'lending term', parseTerm)
-    .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
-    .action(async (params) => {
-        await tomox.watchLendingTrade(params).then(ws=> {
-            ws.on('message', (message) => {
-                console.log('%s', message)
-            })
-        }).catch(e => console.log(e))
-    })
-
-
-commander
-    .command('ws-lending-ohlcv')
-    .description('watch lending OHLCV data')
-    .requiredOption('-t, --term <term>', 'lending term', parseTerm)
-    .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
-    .requiredOption('-u, --units <units>', 'min')
-    .requiredOption('-d, --duration <duration>', 'ohlcv duration, candle side', parseDuration)
-    .action(async (params) => {
-        await tomox.watchLendingOhlcv(params).then(ws=> {
-            ws.on('message', (message) => {
-                console.log('%s', message)
-            })
-        }).catch(e => console.log(e))
-    })
-
-commander
-    .command('lending-pairs')
-    .description('show lending pairs')
-    .action(async () => {
-        await tomox.getLendingPairs().then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
-
-commander
-    .command('lending-markets')
-    .description('show lending markets')
-    .option('-t, --term <term>', 'lending term (seconds)')
-    .option('-l, --lendingToken <lendingToken>', 'lending token')
-    .action(async (params) => {
-        if (params.term && params.lendingToken) {
-            await tomox.getLendingMarket(params).then(data => {
-                console.log(data)
-            }).catch(e => console.log(e))
-        } else {
-            await tomox.getLendingMarkets().then(data => {
-                console.log(data)
-            }).catch(e => console.log(e))
-        }
-    })
-
-commander
-    .command('ws-lending-markets')
-    .description('watch all lending markets')
-    .action(async () => {
-        await tomox.watchLendingMarkets().then(ws => {
-            ws.on('message', (message) => {
-                console.log('%s', message)
-            })
-        }).catch(e => console.log(e))
-    })
-
-commander
-    .command('lending-tokens')
-    .alias('l-tokens')
-    .description('show lending tokens')
-    .action(async () => {
-        await tomox.getLendingTokens().then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
-commander
-    .command('collateral-tokens')
-    .description('show lending collateral tokens')
-    .action(async () => {
-        await tomox.getCollateralTokens().then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
-
-commander
-    .command('lending-trades-history')
-    .description('show lending trades')
-    .option('-a, --address <address>', 'address')
-    .requiredOption('-t, --term <term>', 'term')
-    .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
-    .action(async (params) => {
-        await tomox.getLendingTradesHistory(params).then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
+    function parseTerm(value, previous) {
+        return parseInt(value)
+    }
 
     commander
-    .command('lending-terms')
-    .description('show lending terms')
-    .action(async () => {
-        await tomox.getLendingTerms().then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
-commander
-    .command('lending-orders')
-    .alias('l-orders')
-    .description('show list lending orders')
-    .option('-a, --address <address>', 'address')
-    .option('-l, --lendingToken <lendingToken>', 'lendingToken')
-    .option('-c, --collateralToken <collateralToken>', 'collateralToken')
-    .option('-t, --term <term>', 'term')
-    .option('-s, --lendingStatus <lendingStatus>', 'lendingStatus')
-    .option('-F, --from <from>', 'from')
-    .option('-T, --to <to>', 'to')
-    .option('-O, --pageOffset <pageOffset>', 'pageOffset')
-    .option('-S, --pageSize <pageSize>', 'pageSize')
-    .action(async (params) => {
-        await tomox.getLendingOrders(params).then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
+        .command('cancel')
+        .description('cancel a trading order or cancel multiple orders')
+        .requiredOption('-H, --hash <hash>', 'hash', collect, [])
+        .option('-n, --nonce <nonce>', 'nonce')
+        .action(async (params) => {
+            if (params.hash.length === 1) {
+                await tomox.cancelOrder(params.hash[0], params.nonce).then(data => {
+                    console.log(data)
+                }).catch(e => console.log(e))
+            }
+            if (params.hash.length > 1) {
+                await tomox.cancelManyOrders(params.hash, params.nonce).then(data => {
+                    console.log(data)
+                }).catch(e => console.log(e))
+            }
+        })
 
-commander
-    .command('lending-trades')
-    .alias('l-trades')
-    .description('show list lending trades')
-    .option('-l, --lendingToken <lendingToken>', 'lendingToken')
-    .option('-t, --term <term>', 'term')
-    .option('-s, --status <status>', 'status')
-    .option('-F, --from <from>', 'from')
-    .option('-T, --to <to>', 'to')
-    .option('-O, --pageOffset <pageOffset>', 'pageOffset')
-    .option('-S, --pageSize <pageSize>', 'pageSize')
-    .action(async (params) => {
-        await tomox.getLendingTrades(params).then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
+    commander
+        .command('pairs')
+        .description('show trading pairs')
+        .action(async () => {
+            await tomox.getPairs().then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
+
+    commander
+        .command('o-list')
+        .description('show user orders')
+        .alias('list')
+        .option('-b, --baseToken <baseToken>', 'base token')
+        .option('-q, --quoteToken <quoteToken>', 'quote token')
+        .option('-s, --status <status>', 'order status')
+        .action(async (params) => {
+            await tomox.getOrders(params).then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
+
+    commander
+        .command('o-get')
+        .description('show order by hash')
+        .alias('get')
+        .requiredOption('-s, --hash <hash>', 'order hash')
+        .action(async (params) => {
+            await tomox.getOrderByHash(params.hash).then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
+
+    commander
+        .command('orderbook')
+        .description('show trading orderbook')
+        .requiredOption('-b, --baseToken <baseToken>', 'base token')
+        .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
+        .action(async (params) => {
+            await tomox.getOrderBook(params).then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
+
+    commander
+        .command('ohlcv')
+        .description('show trading OHLCV data')
+        .requiredOption('-b, --baseToken <baseToken>', 'base token')
+        .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
+        .requiredOption('-i, --timeInterval <timeInterval>', 'time interval, candle size. Valid values: 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 1w, 1mo (1 month)')
+        .action(async (params) => {
+            await tomox.getOHLCV(params).then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
+
+    commander
+        .command('info')
+        .description('show DEX information')
+        .action(async () => {
+            await tomox.getRelayerInfo().then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
+
+    commander
+        .command('ws-orderbook')
+        .description('watch trading orderbook')
+        .requiredOption('-b, --baseToken <baseToken>', 'base token')
+        .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
+        .action(async (params) => {
+            await tomox.watchOrderBook(params).then(ws=> {
+                ws.on('message', (message) => {
+                    console.log('%s', message)
+                })
+            }).catch(e => console.log(e))
+        })
+
+    commander
+        .command('ws-ohlcv')
+        .description('watch trading OHLCV data')
+        .requiredOption('-b, --baseToken <baseToken>', 'base token')
+        .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
+        .requiredOption('-u, --units <units>', 'min')
+        .requiredOption('-d, --duration <duration>', '1', parseDuration)
+        .action(async (params) => {
+            await tomox.watchOHLCV(params).then(ws=> {
+                ws.on('message', (message) => {
+                    console.log('%s', message)
+                })
+            }).catch(e => console.log(e))
+        })
+
+    commander
+        .command('ws-trades')
+        .description('watch trades')
+        .requiredOption('-b, --baseToken <baseToken>', 'base token')
+        .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
+        .action(async (params) => {
+            await tomox.watchTrades(params).then(ws => {
+                ws.on('message', (message) => {
+                    console.log('%s', message)
+                })
+            }).catch(e => console.log(e))
+        })
+
+    commander
+        .command('ws-price-board')
+        .description('watch price board')
+        .requiredOption('-b, --baseToken <baseToken>', 'base token')
+        .requiredOption('-q, --quoteToken <quoteToken>', 'quote token')
+        .action(async (params) => {
+            await tomox.watchPriceBoard(params).then(ws => {
+                ws.on('message', (message) => {
+                    console.log('%s', message)
+                })
+            }).catch(e => console.log(e))
+        })
+
+    commander
+        .command('ws-markets')
+        .description('watch trading market')
+        .action(async () => {
+            await tomox.watchMarkets().then(ws => {
+                ws.on('message', (message) => {
+                    console.log('%s', message)
+                })
+            }).catch(e => console.log(e))
+        })
+
+        function collect(value, previous) {
+            return previous.concat([value]);
+      }
+     
+      commander
+        .command('lending-hash')
+        .alias('l-hash')
+        .description('show lending order by hash')
+        .requiredOption('-H , --hash <hash>', 'lending hash')
+        .action(async (params) => {
+            await tomox.getLendingByHash(params.hash).then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
 
 
-commander
-    .command('ws-lending-priceboard')
-    .description('watch lending price board')
-    .requiredOption('-t, --term <term>', 'term', parseTerm)
-    .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
-    .action(async (params) => {
-        await tomox.watchLendingPriceBoard(params).then(ws => {
-            ws.on('message', (message) => {
-                console.log('%s', message)
-            })
-        }).catch(e => console.log(e))
-    })
+      commander
+        .command('lending-nonce')
+        .description('show lending user nonce')
+        .action(async () => {
+            await tomox.getLendingNonce().then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
 
-commander
-    .command('lending-topups')
-    .alias('l-topups')
-    .description('show list topups')
-    .option('-a, --address <address>', 'address')
-    .option('-l, --lendingToken <lendingToken>', 'lendingToken')
-    .option('-c, --collateralToken <collateralToken>', 'collateralToken')
-    .option('-t, --term <term>', 'term')
-    .option('-F, --from <from>', 'from')
-    .option('-T, --to <to>', 'to')
-    .option('-O, --pageOffset <pageOffset>', 'pageOffset')
-    .option('-S, --pageSize <pageSize>', 'pageSize')
-    .action(async (params) => {
-        await tomox.getLendingTopups(params).then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
+    commander
+        .command('lending-create')
+        .alias('l-create')
+        .description('create a lending order')
+        .option('-c, --collateralToken <collateralToken>', 'collateral token')
+        .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
+        .requiredOption('-q, --quantity <quantity>', 'quantity')
+        .requiredOption('-i, --interest <interest>', 'interest')
+        .option('-e, --term <term>', 'term', '86400')
+        .option('-s, --side <side>', 'side', 'INVEST')
+        .option('-t, --type <type>', 'type', 'LO')
+        .option('-r, --relayerAddress <relayerAddress>', 'relayerAddress')
+        .option('-n, --nonce <nonce>')
+        .option('-u, --autoTopUp <autoTopUp>', '1')
+        .action(async (params) => {
+            await tomox.createLending({
+                collateralToken: params.collateralToken,
+                lendingToken: params.lendingToken,
+                relayerAddress: params.relayerAddress,
+                quantity: params.quantity,
+                interest: params.interest,
+                term: params.term,
+                side: params.side,
+                type: params.type,
+                nonce: params.nonce,
+                autoTopUp: params.autoTopUp,
+            }).then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
 
-commander
-    .command('lending-repays')
-    .alias('l-repays')
-    .description('show list repays')
-    .option('-a, --address <address>', 'address')
-    .option('-l, --lendingToken <lendingToken>', 'lendingToken')
-    .option('-t, --term <term>', 'term')
-    .option('-F, --from <from>', 'from')
-    .option('-T, --to <to>', 'to')
-    .option('-O, --pageOffset <pageOffset>', 'pageOffset')
-    .option('-S, --pageSize <pageSize>', 'pageSize')
-    .action(async (params) => {
-        await tomox.getLendingRepays(params).then(data => {
-            console.log(data)
-        }).catch(e => console.log(e))
-    })
+    commander
+        .command('ws-lending-create')
+        .description('create a lending order via websocket')
+        .option('-c, --collateralToken <collateralToken>', 'collateral token', '0xBD8b2Fb871F97b2d5F0A1af3bF73619b09174B2A')
+        .requiredOption('-l, --lendingToken <lendingToken>', 'lending token', '0x0000000000000000000000000000000000000001')
+        .requiredOption('-q, --quantity <quantity>', 'quantity', '2')
+        .requiredOption('-i, --interest <interest>', 'interest', '10')
+        .option('-e, --term <term>', 'term', '86400')
+        .option('-s, --side <side>', 'side', 'INVEST')
+        .option('-t, --type <type>', 'type', 'LO')
+        .option('-r, --relayerAddress <relayerAddress>', 'relayerAddress')
+        .option('-n, --nonce <nonce>')
+        .action(async (params) => {
 
-commander.parse(process.argv)
+            await tomox.createWsLending({
+                collateralToken: params.collateralToken,
+                lendingToken: params.lendingToken,
+                relayerAddress: params.relayerAddress,
+                quantity: params.quantity,
+                interest: params.interest,
+                term: params.term,
+                side: params.side,
+                type: params.type,
+                nonce: params.nonce,
+            }).then(ws => {
+                ws.on('message', (message) => {
+                    console.log('%s', message)
+                })
+            }).catch(e => console.log(e))
+        })
+
+    commander
+        .command('create-lending-repay')
+        .alias('repay')
+        .description('create repay a loan')
+        .option('-r, --relayerAddress <relayerAddress>')
+        .requiredOption('-l, --lendingToken <lendingToken>')
+        .requiredOption('-t, --term <term>')
+        .requiredOption('-i, --tradeId <tradeId>')
+        .option('-n, --nonce <nonce>')
+        .action(async (params) => {
+            await tomox.repayLending({
+                relayerAddress: params.relayerAddress,
+                lendingToken: params.lendingToken,
+                term: params.term,
+                tradeId: params.tradeId,
+                nonce: params.nonce,
+            }).then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
+
+    commander
+        .command('create-lending-topup')
+        .description('create topup a loan')
+        .alias('topup')
+        .option('-r, --relayerAddress <relayerAddress>')
+        .requiredOption('-l, --lendingToken <lendingToken>')
+        .requiredOption('-t, --term <term>')
+        .requiredOption('-c, --collateralToken <collateralToken>')
+        .requiredOption('-q, --quantity <quantity>')
+        .requiredOption('-i, --tradeId <tradeId>')
+        .option('-n, --nonce <nonce>')
+        .action(async (params) => {
+            await tomox.topupLending({
+                relayerAddress: params.relayerAddress,
+                lendingToken: params.lendingToken,
+                term: params.term,
+                collateralToken: params.collateralToken,
+                quantity: params.quantity,
+                tradeId: params.tradeId,
+                nonce: params.nonce,
+            }).then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
+
+    commander
+        .command('lending-cancel')
+        .description('cancel a lending order')
+        .requiredOption('-H, --cancelHash <cancelHash>')
+        .option('-n, --nonce <nonce>', 'nonce')
+        .action(async (params) => {
+            await tomox.cancelLending({
+                nonce: params.nonce,
+                hash: params.cancelHash
+            }).then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+            
+        })
+
+    commander
+        .command('lending-orderbook')
+        .description('show lending orderbook')
+        .requiredOption('-t, --term <term>', '60')
+        .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
+        .action(async (params) => {
+            await tomox.getLendingOrderBook(params).then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
+
+    commander
+        .command('ws-lending-orderbook')
+        .description('watch lending orderbook')
+        .requiredOption('-t, --term <term>', 'lending term', parseTerm)
+        .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
+        .action(async (params) => {
+            await tomox.watchLendingOrderBook(params).then(ws=> {
+                ws.on('message', (message) => {
+                    console.log('%s', message)
+                })
+            }).catch(e => console.log(e))
+        })
+
+    commander
+        .command('ws-lending-trades')
+        .description('watch lending trades')
+        .requiredOption('-t, --term <term>', 'lending term', parseTerm)
+        .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
+        .action(async (params) => {
+            await tomox.watchLendingTrade(params).then(ws=> {
+                ws.on('message', (message) => {
+                    console.log('%s', message)
+                })
+            }).catch(e => console.log(e))
+        })
+
+
+    commander
+        .command('ws-lending-ohlcv')
+        .description('watch lending OHLCV data')
+        .requiredOption('-t, --term <term>', 'lending term', parseTerm)
+        .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
+        .requiredOption('-u, --units <units>', 'min')
+        .requiredOption('-d, --duration <duration>', 'ohlcv duration, candle side', parseDuration)
+        .action(async (params) => {
+            await tomox.watchLendingOhlcv(params).then(ws=> {
+                ws.on('message', (message) => {
+                    console.log('%s', message)
+                })
+            }).catch(e => console.log(e))
+        })
+
+    commander
+        .command('lending-pairs')
+        .description('show lending pairs')
+        .action(async () => {
+            await tomox.getLendingPairs().then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
+
+    commander
+        .command('lending-markets')
+        .description('show lending markets')
+        .option('-t, --term <term>', 'lending term (seconds)')
+        .option('-l, --lendingToken <lendingToken>', 'lending token')
+        .action(async (params) => {
+            if (params.term && params.lendingToken) {
+                await tomox.getLendingMarket(params).then(data => {
+                    console.log(data)
+                }).catch(e => console.log(e))
+            } else {
+                await tomox.getLendingMarkets().then(data => {
+                    console.log(data)
+                }).catch(e => console.log(e))
+            }
+        })
+
+    commander
+        .command('ws-lending-markets')
+        .description('watch all lending markets')
+        .action(async () => {
+            await tomox.watchLendingMarkets().then(ws => {
+                ws.on('message', (message) => {
+                    console.log('%s', message)
+                })
+            }).catch(e => console.log(e))
+        })
+
+    commander
+        .command('lending-tokens')
+        .alias('l-tokens')
+        .description('show lending tokens')
+        .action(async () => {
+            await tomox.getLendingTokens().then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
+    commander
+        .command('collateral-tokens')
+        .description('show lending collateral tokens')
+        .action(async () => {
+            await tomox.getCollateralTokens().then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
+
+    commander
+        .command('lending-trades-history')
+        .description('show lending trades')
+        .option('-a, --address <address>', 'address')
+        .requiredOption('-t, --term <term>', 'term')
+        .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
+        .action(async (params) => {
+            await tomox.getLendingTradesHistory(params).then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
+
+        commander
+        .command('lending-terms')
+        .description('show lending terms')
+        .action(async () => {
+            await tomox.getLendingTerms().then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
+    commander
+        .command('lending-orders')
+        .alias('l-orders')
+        .description('show list lending orders')
+        .option('-a, --address <address>', 'address')
+        .option('-l, --lendingToken <lendingToken>', 'lendingToken')
+        .option('-c, --collateralToken <collateralToken>', 'collateralToken')
+        .option('-t, --term <term>', 'term')
+        .option('-s, --lendingStatus <lendingStatus>', 'lendingStatus')
+        .option('-F, --from <from>', 'from')
+        .option('-T, --to <to>', 'to')
+        .option('-O, --pageOffset <pageOffset>', 'pageOffset')
+        .option('-S, --pageSize <pageSize>', 'pageSize')
+        .action(async (params) => {
+            await tomox.getLendingOrders(params).then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
+
+    commander
+        .command('lending-trades')
+        .alias('l-trades')
+        .description('show list lending trades')
+        .option('-l, --lendingToken <lendingToken>', 'lendingToken')
+        .option('-t, --term <term>', 'term')
+        .option('-s, --status <status>', 'status')
+        .option('-F, --from <from>', 'from')
+        .option('-T, --to <to>', 'to')
+        .option('-O, --pageOffset <pageOffset>', 'pageOffset')
+        .option('-S, --pageSize <pageSize>', 'pageSize')
+        .action(async (params) => {
+            await tomox.getLendingTrades(params).then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
+
+
+    commander
+        .command('ws-lending-priceboard')
+        .description('watch lending price board')
+        .requiredOption('-t, --term <term>', 'term', parseTerm)
+        .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
+        .action(async (params) => {
+            await tomox.watchLendingPriceBoard(params).then(ws => {
+                ws.on('message', (message) => {
+                    console.log('%s', message)
+                })
+            }).catch(e => console.log(e))
+        })
+
+    commander
+        .command('lending-topups')
+        .alias('l-topups')
+        .description('show list topups')
+        .option('-a, --address <address>', 'address')
+        .option('-l, --lendingToken <lendingToken>', 'lendingToken')
+        .option('-c, --collateralToken <collateralToken>', 'collateralToken')
+        .option('-t, --term <term>', 'term')
+        .option('-F, --from <from>', 'from')
+        .option('-T, --to <to>', 'to')
+        .option('-O, --pageOffset <pageOffset>', 'pageOffset')
+        .option('-S, --pageSize <pageSize>', 'pageSize')
+        .action(async (params) => {
+            await tomox.getLendingTopups(params).then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
+
+    commander
+        .command('lending-repays')
+        .alias('l-repays')
+        .description('show list repays')
+        .option('-a, --address <address>', 'address')
+        .option('-l, --lendingToken <lendingToken>', 'lendingToken')
+        .option('-t, --term <term>', 'term')
+        .option('-F, --from <from>', 'from')
+        .option('-T, --to <to>', 'to')
+        .option('-O, --pageOffset <pageOffset>', 'pageOffset')
+        .option('-S, --pageSize <pageSize>', 'pageSize')
+        .action(async (params) => {
+            await tomox.getLendingRepays(params).then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
+
+    commander.parse(process.argv)
+}
