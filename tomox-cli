@@ -662,6 +662,37 @@ function run() {
                 console.log(data)
             }).catch(e => console.log(e))
         })
+    commander
+        .command('lending-recalls')
+        .alias('l-recalls')
+        .description('show list recall')
+        .option('-a, --address <address>', 'address')
+        .option('-l, --lendingToken <lendingToken>', 'lendingToken')
+        .option('-c, --collateralToken <collateralToken>', 'collateralToken')
+        .option('-t, --term <term>', 'term')
+        .option('-F, --from <from>', 'from')
+        .option('-T, --to <to>', 'to')
+        .option('-O, --pageOffset <pageOffset>', 'pageOffset')
+        .option('-S, --pageSize <pageSize>', 'pageSize')
+        .action(async (params) => {
+            await tomox.getLendingRecalls(params).then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
 
+    commander
+        .command('lending-estimate')
+        .alias('l-estimate')
+        .description('estimate collateral amount')
+        .requiredOption('-l, --lendingToken <lendingToken>', 'lendingToken')
+        .requiredOption('-c, --collateralToken <collateralToken>', 'collateralToken')
+        .requiredOption('-a, --amount <amount>', 'amount')
+        .action(async (params) => {
+            await tomox.estimateCollateral(params).then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
+
+    
     commander.parse(process.argv)
 }

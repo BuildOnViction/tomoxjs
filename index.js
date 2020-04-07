@@ -1685,7 +1685,7 @@ class TomoXJS {
                 term: params.term,
                 lendingToken: params.lendingToken,
                 collateralToken: params.collateralToken,
-                address: params.address || this.coinbase,
+                address: params.address,
                 from: params.from,
                 to: params.to,
                 pageOffset: params.pageOffset,
@@ -1720,7 +1720,7 @@ class TomoXJS {
             let qs = {
                 term: params.term,
                 lendingToken: params.lendingToken,
-                address: params.address || this.coinbase,
+                address: params.address,
                 from: params.from,
                 to: params.to,
                 pageOffset: params.pageOffset,
@@ -1744,6 +1744,72 @@ class TomoXJS {
                     return resolve(pairs)
                 } catch (e) {
                     return reject(Error('Can not get topup, check again'))
+                }
+            })
+        })
+    }
+    getLendingRecalls(params) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerUri, '/api/lending/recall')
+            let qs = {
+                term: params.term,
+                lendingToken: params.lendingToken,
+                collateralToken: params.collateralToken,
+                address: params.address,
+                from: params.from,
+                to: params.to,
+                pageOffset: params.pageOffset,
+                pageSize: params.pageSize
+            }
+            let options = {
+                method: 'GET',
+                url: url,
+                qs: qs,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+                try {
+                    let pairs = (body || {}).data
+                    return resolve(pairs)
+                } catch (e) {
+                    return reject(Error('Can not get recall, check again'))
+                }
+            })
+        })
+    }
+
+    estimateCollateral(params) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerUri, '/api/lending/estimate')
+            let qs = {
+                amount: params.amount,
+                lendingToken: params.lendingToken,
+                collateralToken: params.collateralToken,
+            }
+            let options = {
+                method: 'GET',
+                url: url,
+                qs: qs,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+                try {
+                    let pairs = (body || {}).data
+                    return resolve(pairs)
+                } catch (e) {
+                    return reject(Error('Can not estimate collateral amount, check again'))
                 }
             })
         })
