@@ -107,19 +107,6 @@ function run() {
         })
 
     commander
-        .command('env')
-        .description('show environment information')
-        .action((params) => {
-            console.log(`
-            configPath: ${configPath}
-            DEX_URI: ${process.env.DEX_URI}
-            DEX_WS_URI: ${process.env.DEX_WS_URI}
-            TRADER_ADDR: ${process.env.TRADER_ADDR}
-            TRADER_PKEY: ******
-            `)
-        })
-
-    commander
         .command('create')
         .description('create a trading order')
         .option('-b, --baseToken <baseToken>', 'base token', '0xBD8b2Fb871F97b2d5F0A1af3bF73619b09174B2A')
@@ -233,9 +220,21 @@ function run() {
         .command('info')
         .description('show DEX information')
         .action(async () => {
+            let ret = {
+                configPath: configPath,
+                DEX_URI: process.env.DEX_URI,
+                DEX_WS_URI: process.env.DEX_WS_URI,
+                TRADER_ADDR: process.env.TRADER_ADDR,
+                TRADER_PKEY: '******'
+            }
             await tomox.getRelayerInfo().then(data => {
-                console.log(data)
-            }).catch(e => console.log(e))
+                ret.exchangeAddress = data.exchangeAddress
+                ret.fee = data.fee
+                ret.lendingFee = data.lendingFee
+                console.log(ret)
+            }).catch(e => {
+                console.log(ret)
+            })
         })
 
     commander
@@ -341,7 +340,7 @@ function run() {
         .option('-t, --type <type>', 'type', 'LO')
         .option('-r, --relayerAddress <relayerAddress>', 'relayerAddress')
         .option('-n, --nonce <nonce>')
-        .option('-u, --autoTopUp <autoTopUp>', '1')
+        .option('-u, --autoTopUp <autoTopUp>', 'auto topup', '1')
         .action(async (params) => {
             await tomox.createLending({
                 collateralToken: params.collateralToken,
