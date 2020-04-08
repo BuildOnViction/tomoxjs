@@ -1814,6 +1814,38 @@ class TomoXJS {
             })
         })
     }
+    getLendingOhlcv(params) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerUri, '/api/lending-ohlcv')
+            let qs = {
+                term: params.term,
+                lendingToken: params.lendingToken,
+                timeInterval: params.timeInterval,
+                from: params.from,
+                to: params.to,
+            }
+            let options = {
+                method: 'GET',
+                url: url,
+                qs: qs,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+                try {
+                    let pairs = (body || {}).data
+                    return resolve(pairs)
+                } catch (e) {
+                    return reject(Error('Can not get lending ohlcv, check again'))
+                }
+            })
+        })
+    }
 }
 
 module.exports = TomoXJS

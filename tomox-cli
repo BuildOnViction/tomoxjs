@@ -502,6 +502,22 @@ function run() {
                 })
             }).catch(e => console.log(e))
         })
+    
+
+    commander
+        .command('lending-ohlcv')
+        .description('get lending OHLCV data')
+        .requiredOption('-t, --term <term>', 'lending term')
+        .requiredOption('-l, --lendingToken <lendingToken>', 'lending token')
+        .requiredOption('-u, --timeInterval <timeInterval>', 'timeInterval')
+        .option('-F, --from <from>', 'from')
+        .option('-T, --to <to>', 'to')
+        .action(async (params) => {
+            await tomox.getLendingOhlcv(params).then(data => {
+                console.log(data)
+            }).catch(e => console.log(e))
+        })
+
 
     commander
         .command('lending-pairs')
@@ -570,7 +586,7 @@ function run() {
             }).catch(e => console.log(e))
         })
 
-        commander
+    commander
         .command('lending-terms')
         .description('show lending terms')
         .action(async () => {
