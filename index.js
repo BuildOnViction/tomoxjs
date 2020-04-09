@@ -902,6 +902,7 @@ class TomoXJS {
                 'bytes',
                 'uint256',
                 'uint256',
+                'string'
             ],
             [
                 order.nonce,
@@ -911,6 +912,7 @@ class TomoXJS {
                 order.lendingToken,
                 order.term,
                 order.tradeId,
+                order.type
             ],
         )
     }
@@ -1121,7 +1123,8 @@ class TomoXJS {
                     lendingToken: order.lendingToken,
                     term: order.term,
                     tradeId: order.tradeId,
-                    status: 'REPAY'
+                    type: 'REPAY',
+                    status: 'NEW'
                 }
                 o.nonce = String(nonce)
                 o.hash = this.getRepayLendingHash(o)
