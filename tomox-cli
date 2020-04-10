@@ -437,6 +437,7 @@ function run() {
 
     commander
         .command('lending-cancel')
+        .alias('l-cancel')
         .description('cancel a lending order')
         .requiredOption('-H, --cancelHash <cancelHash>')
         .option('-n, --nonce <nonce>', 'nonce')
