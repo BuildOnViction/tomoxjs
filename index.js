@@ -39,6 +39,44 @@ class TomoXJS {
             })
         })
     }
+    watchOrders({ userAddress }) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerWsUri)
+            const ws = new WebSocket(url)
+            ws.on('close', () => { 
+                resolve()
+            })
+            ws.on('open', function connection() {
+                ws.send(JSON.stringify({
+                    channel: 'orders',
+                    event: {
+                        type: 'SUBSCRIBE',
+                        payload: userAddress
+                    }
+                }))
+                resolve(ws)
+            })
+        })
+    }
+    watchLendingOrders({ userAddress }) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerWsUri)
+            const ws = new WebSocket(url)
+            ws.on('close', () => { 
+                resolve()
+            })
+            ws.on('open', function connection() {
+                ws.send(JSON.stringify({
+                    channel: 'lending_orders',
+                    event: {
+                        type: 'SUBSCRIBE',
+                        payload: userAddress
+                    }
+                }))
+                resolve(ws)
+            })
+        })
+    }
     watchPriceBoard({ baseToken, quoteToken }) {
         return new Promise((resolve, reject) => {
             let url = urljoin(this.relayerWsUri)
