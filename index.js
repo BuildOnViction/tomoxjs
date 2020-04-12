@@ -20,6 +20,25 @@ class TomoXJS {
         this.wallet = new ethers.Wallet(pkey)
         this.coinbase = this.wallet.address
     }
+    watchNotification({ userAddress }) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerWsUri)
+            const ws = new WebSocket(url)
+            ws.on('close', () => { 
+                resolve()
+            })
+            ws.on('open', function connection() {
+                ws.send(JSON.stringify({
+                    channel: 'notification',
+                    event: {
+                        type: 'SUBSCRIBE',
+                        payload: userAddress
+                    }
+                }))
+                resolve(ws)
+            })
+        })
+    }
     watchPriceBoard({ baseToken, quoteToken }) {
         return new Promise((resolve, reject) => {
             let url = urljoin(this.relayerWsUri)

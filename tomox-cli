@@ -710,6 +710,18 @@ function run() {
             }).catch(e => console.log(e))
         })
 
+    commander
+        .command('ws-notification')
+        .description('watch user notification')
+        .option('-u, --userAddress <userAddress>', 'user address')
+        .action(async (params) => {
+            params.userAddress = params.userAddress || process.env.TRADER_ADDR
+            await tomox.watchNotification(params).then(ws => {
+                ws.on('message', (message) => {
+                    console.log('%s', message)
+                })
+            }).catch(e => console.log(e))
+        })
     
     commander.parse(process.argv)
 }
