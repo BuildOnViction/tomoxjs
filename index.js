@@ -1178,14 +1178,10 @@ class TomoXJS {
                     relayerAddress: order.relayerAddress || relayer.exchangeAddress,
                     lendingToken: order.lendingToken,
                     term: order.term,
-                    quantity: 10,
                     tradeId: order.tradeId,
                     type: 'REPAY',
                     status: 'NEW'
                 }
-
-                o.quantity = new BigNumber(o.quantity)
-                    .multipliedBy(10 ** 8).toString(10)
 
                 o.nonce = String(nonce)
                 o.hash = this.getRepayLendingHash(o)
