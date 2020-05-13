@@ -671,7 +671,7 @@ class TomoXJS {
             })
         })
     }
-    getOrders(params) {
+    getOrders({ status, baseToken, quoteToken, page, limit }) {
         return new Promise((resolve, reject) => {
             let url = urljoin(this.relayerUri, '/api/orders')
 
@@ -679,13 +679,16 @@ class TomoXJS {
                 address: this.coinbase
             }
 
-            if (params.quoteToken && params.baseToken) {
-                qs.baseToken = params.baseToken
-                qs.quoteToken = params.quoteToken
+            qs.pageSize = limit || 50
+            qs.pageOffset = page || 1
+
+            if (quoteToken && baseToken) {
+                qs.baseToken = baseToken
+                qs.quoteToken = quoteToken
             }
 
-            if (params.status) {
-                qs.orderStatus = params.status
+            if (status) {
+                qs.orderStatus = status
             }
 
             let options = {
