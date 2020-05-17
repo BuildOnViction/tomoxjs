@@ -680,7 +680,7 @@ class TomoXJS {
             }
 
             qs.pageSize = limit || 50
-            qs.pageOffset = page || 1
+            qs.pageOffset = parseInt(page) - 1 || 0
 
             if (quoteToken && baseToken) {
                 qs.baseToken = baseToken
