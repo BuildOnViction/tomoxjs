@@ -545,13 +545,12 @@ class TomoXJS {
 
                     try {
                         const signature = await this.wallet.signMessage(ethers.utils.arrayify(oc.hash))
+                        const { r, s, v } = ethers.utils.splitSignature(signature)
+
+                        oc.signature = { R: r, S: s, V: v }
                     } catch (e) {
                         continue
                     }
-
-                    const { r, s, v } = ethers.utils.splitSignature(signature)
-
-                    oc.signature = { R: r, S: s, V: v }
 
                     let url = urljoin(this.relayerUri, '/api/orders/cancel')
                     let options = {
