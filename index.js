@@ -636,7 +636,7 @@ class TomoXJS {
                 }
 
                 try {
-                    let order = (body || {}).data
+                    let order = (body || {}).data || {}
                     return resolve(order)
                 } catch (e) {
                     return reject(Error('Can not get order, check relayer uri again'))
