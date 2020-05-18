@@ -531,53 +531,53 @@ class TomoXJS {
                     const oc = {}
                     oc.orderHash = orderHash
                     oc.nonce = String(nonce)
-                    let orderDetail = await this.getOrderByHash(orderHash)
-                    if(orderDetail) {
-                        let { baseToken, quoteToken, exchangeAddress, userAddress, orderID } = orderDetail
-                        if (!orderID) {
-                            continue
-                        }
-                        oc.userAddress = ethers.utils.getAddress(userAddress)
-                        oc.exchangeAddress = ethers.utils.getAddress(exchangeAddress)
-                        oc.orderID = orderID
-                        oc.status = 'CANCELLED'
-                        oc.quoteToken = ethers.utils.getAddress(quoteToken)
-                        oc.baseToken = ethers.utils.getAddress(baseToken)
-                        oc.hash = this.getOrderCancelHash(oc)
-    
-                        try {
-                            const signature = await this.wallet.signMessage(ethers.utils.arrayify(oc.hash))
-                            const { r, s, v } = ethers.utils.splitSignature(signature)
-    
-                            oc.signature = { R: r, S: s, V: v }
-                        } catch (e) {
-                            continue
-                        }
-    
-                        let url = urljoin(this.relayerUri, '/api/orders/cancel')
-                        let options = {
-                            method: 'POST',
-                            url: url,
-                            json: true,
-                            headers: {
-                                'content-type': 'application/json'
-                            },
-                            body: oc
-                        }
-    
-                        let p = () => {
-                            return new Promise((rl, rj) => {
-                                request(options, (error, response, body) => {
-                                    if (error) {
-                                        return rj(error)
-                                    }
-                                    if (response.statusCode !== 200 && response.statusCode !== 201) {
-                                        return rj(body)
-                                    }
-    
-                                    return rl(oc)
-    
-                                })
+
+                    let order = await this.getOrderByHash(orderHash)
+                    if (!order) {
+                        continue
+                    }
+
+                    let { baseToken, quoteToken, exchangeAddress, userAddress, orderID } = order
+                    if (!orderID) {
+                        continue
+                    }
+
+                    oc.userAddress = ethers.utils.getAddress(userAddress)
+                    oc.exchangeAddress = ethers.utils.getAddress(exchangeAddress)
+                    oc.orderID = orderID
+                    oc.status = 'CANCELLED'
+                    oc.quoteToken = ethers.utils.getAddress(quoteToken)
+                    oc.baseToken = ethers.utils.getAddress(baseToken)
+                    oc.hash = this.getOrderCancelHash(oc)
+
+                    const signature = await this.wallet.signMessage(ethers.utils.arrayify(oc.hash))
+                    const { r, s, v } = ethers.utils.splitSignature(signature)
+
+                    oc.signature = { R: r, S: s, V: v }
+
+                    let url = urljoin(this.relayerUri, '/api/orders/cancel')
+                    let options = {
+                        method: 'POST',
+                        url: url,
+                        json: true,
+                        headers: {
+                            'content-type': 'application/json'
+                        },
+                        body: oc
+                    }
+
+                    let p = () => {
+                        return new Promise((rl, rj) => {
+                            request(options, (error, response, body) => {
+                                if (error) {
+                                    return rj(error)
+                                }
+                                if (response.statusCode !== 200 && response.statusCode !== 201) {
+                                    return rj(body)
+                                }
+
+                                return rl(oc)
+
                             })
                         }
                         ret.push(await p())
