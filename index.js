@@ -531,10 +531,17 @@ class TomoXJS {
                     const oc = {}
                     oc.orderHash = orderHash
                     oc.nonce = String(nonce)
-                    let { baseToken, quoteToken, exchangeAddress, userAddress, orderID } = await this.getOrderByHash(orderHash)
+
+                    let order = await this.getOrderByHash(orderHash)
+                    if (!order) {
+                        continue
+                    }
+
+                    let { baseToken, quoteToken, exchangeAddress, userAddress, orderID } = order
                     if (!orderID) {
                         continue
                     }
+
                     oc.userAddress = ethers.utils.getAddress(userAddress)
                     oc.exchangeAddress = ethers.utils.getAddress(exchangeAddress)
                     oc.orderID = orderID
@@ -543,14 +550,10 @@ class TomoXJS {
                     oc.baseToken = ethers.utils.getAddress(baseToken)
                     oc.hash = this.getOrderCancelHash(oc)
 
-                    try {
-                        const signature = await this.wallet.signMessage(ethers.utils.arrayify(oc.hash))
-                        const { r, s, v } = ethers.utils.splitSignature(signature)
+                    const signature = await this.wallet.signMessage(ethers.utils.arrayify(oc.hash))
+                    const { r, s, v } = ethers.utils.splitSignature(signature)
 
-                        oc.signature = { R: r, S: s, V: v }
-                    } catch (e) {
-                        continue
-                    }
+                    oc.signature = { R: r, S: s, V: v }
 
                     let url = urljoin(this.relayerUri, '/api/orders/cancel')
                     let options = {
