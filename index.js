@@ -533,7 +533,7 @@ class TomoXJS {
                     oc.nonce = String(nonce)
                     let { baseToken, quoteToken, exchangeAddress, userAddress, orderID } = await this.getOrderByHash(orderHash)
                     if (!orderID) {
-                        return reject(Error('Order is still in pool, not ready to cancel'))
+                        continue
                     }
                     oc.userAddress = ethers.utils.getAddress(userAddress)
                     oc.exchangeAddress = ethers.utils.getAddress(exchangeAddress)
