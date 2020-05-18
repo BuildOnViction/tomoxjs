@@ -543,7 +543,12 @@ class TomoXJS {
                     oc.baseToken = ethers.utils.getAddress(baseToken)
                     oc.hash = this.getOrderCancelHash(oc)
 
-                    const signature = await this.wallet.signMessage(ethers.utils.arrayify(oc.hash))
+                    try {
+                        const signature = await this.wallet.signMessage(ethers.utils.arrayify(oc.hash))
+                    } catch (e) {
+                        continue
+                    }
+
                     const { r, s, v } = ethers.utils.splitSignature(signature)
 
                     oc.signature = { R: r, S: s, V: v }
