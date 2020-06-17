@@ -189,6 +189,58 @@ class TomoXJS {
             })
         })
     }
+    getTokens() {
+        return new Promise((resolve, reject) => {
+
+            let url = urljoin(this.relayerUri, '/api/tokens')
+            let options = {
+                method: 'GET',
+                url: url,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+
+                try {
+                    let info = (body || {}).data
+                    return resolve(info)
+                } catch (e) {
+                    return reject(Error('Can not get token info, check relayer uri again'))
+                }
+            })
+        })
+    }
+    getMarkets() {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerUri, '/api/market/stats/all')
+            var options = {
+                method: 'GET',
+                url: url,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+
+                try {
+                    let data = ((body || {}).data || {})
+                    return resolve(data)
+                } catch (e) {
+                    return reject(Error('Can not get nonce, check relayer uri again'))
+                }
+
+            })
+        })
+    }
     getOrderNonce() {
         return new Promise((resolve, reject) => {
             let url = urljoin(this.relayerUri, '/api/orders/nonce')
