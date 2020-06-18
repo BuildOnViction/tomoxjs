@@ -273,35 +273,6 @@ class TomoXJS {
             })
         })
     }
-    getTrades(params) {
-        return new Promise((resolve, reject) => {
-            let url = urljoin(this.relayerUri, '/api/trades')
-            let qs = {
-                baseToken: params.baseToken,
-                quoteToken: params.quoteToken
-            }
-            let options = {
-                method: 'GET',
-                url: url,
-                qs: qs,
-                json: true,
-                headers: {
-                    'content-type': 'application/json'
-                }
-            }
-            request(options, (error, response, body) => {
-                if (error) {
-                    return reject(error)
-                }
-                try {
-                    let pairs = (body || {}).data
-                    return resolve(pairs)
-                } catch (e) {
-                    return reject(Error('Can not get lending token, check relayer uri again'))
-                }
-            })
-        })
-    }
     getOrderNonce() {
         return new Promise((resolve, reject) => {
             let url = urljoin(this.relayerUri, '/api/orders/nonce')
@@ -975,7 +946,7 @@ class TomoXJS {
                 qs.pageSize = params.limit
             }
             if (params.page) {
-                qs.pageOffset = params.page
+                qs.pageOffset = parseInt(params.page) - 1
             }
 
             let options = {
