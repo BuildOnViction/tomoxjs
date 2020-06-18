@@ -959,6 +959,50 @@ class TomoXJS {
             })
         })
     }
+
+    getTrades(params) {
+        return new Promise((resolve, reject) => {
+            let url = urljoin(this.relayerUri, '/api/trades')
+
+            let qs = { }
+            if (params.baseToken) {
+                qs.baseToken = params.baseToken
+            }
+            if (params.quoteToken) {
+                qs.quoteToken = params.quoteToken
+            }
+            if (params.limit) {
+                qs.pageSize = params.limit
+            }
+            if (params.page) {
+                qs.pageOffset = params.page
+            }
+
+            let options = {
+                method: 'GET',
+                url: url,
+                qs: qs,
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }
+
+            request(options, (error, response, body) => {
+                if (error) {
+                    return reject(error)
+                }
+
+                try {
+                    let data = (body || {}).data
+
+                    return resolve(data)
+                } catch (e) {
+                    return reject(Error('Can not get orders, check relayer uri again'))
+                }
+            })
+        })
+    }
     // lending function
     getCreatedLendingHash(order) {
         if (order.type === 'MO') {
