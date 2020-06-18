@@ -238,6 +238,18 @@ function run() {
                 console.log(ret)
             })
         })
+    
+    commander
+        .command('trades')
+        .description('show trade history')
+        .option('-b, --baseToken <baseToken>', 'base token')
+        .option('-q, --quoteToken <quoteToken>', 'quote token')
+        .option('-l, --limit <limit>', 'limit records per page')
+        .option('-p, --page <page>', 'page number')
+        .action(async (params) => {
+            tomox.getTrades(params).then(data => console.log(data))
+            .catch(error => console.log(error))
+        })
 
     commander
         .command('ws-orderbook')
