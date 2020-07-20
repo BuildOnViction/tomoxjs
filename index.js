@@ -183,7 +183,6 @@ class TomoXJS {
                 resolve()
             })
             ws.on('error', (e) => { 
-                console.log("aaaa", e)
                 resolve()
             })
             ws.on('open', function connection() {
