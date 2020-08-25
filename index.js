@@ -1,6 +1,6 @@
 
 const ethers = require('ethers')
-const request = require('request')
+const request = require('request').defaults({ rejectUnauthorized:false })
 const urljoin = require('url-join');
 const BigNumber = require('bignumber.js')
 const WebSocket = require('ws')
