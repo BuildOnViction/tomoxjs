@@ -27,7 +27,6 @@ jobs:
       script:
         - nexe -i tomox-cli -t linux-x64 -o tomox-cli.$TRAVIS_TAG.linux-x64 -r ./
         - nexe -i tomox-cli -t darwin-x64 -o tomox-cli.$TRAVIS_TAG.darwin-x64 -r ./
-        - nexe -i tomox-cli -t win32-x64-6.11.2 -o tomox-cli.$TRAVIS_TAG.win-x64.exe -r ./
       deploy:
         provider: releases
         api_key: $GH_TOKEN
@@ -35,7 +34,6 @@ jobs:
         overwrite: true
         file:
           - tomox-cli.$TRAVIS_TAG.linux-x64
-          - tomox-cli.$TRAVIS_TAG.win-x64.exe
           - tomox-cli.$TRAVIS_TAG.darwin-x64
         on:
           tags: true
